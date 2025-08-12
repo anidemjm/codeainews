@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto - CodeaiNews</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .contacto-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .contacto-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .contacto-header h1 {
+      color: #1a237e;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .contacto-header p {
+      color: #666;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .contacto-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    
+    .mapa-section {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 1.5rem;
+      height: 400px;
+    }
+    
+    .mapa-section h3 {
+      color: #1a237e;
+      margin-bottom: 1rem;
+    }
+    
+    .mapa-container {
+      width: 100%;
+      height: 300px;
+      background: #e0e0e0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .info-contacto {
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    
+    .info-contacto h3 {
+      color: #1a237e;
+      margin-bottom: 1.5rem;
+    }
+    
+    .contacto-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .contacto-icono {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      color: #ff9800;
+      width: 40px;
+      text-align: center;
+    }
+    
+    .contacto-texto h4 {
+      margin: 0 0 0.5rem 0;
+      color: #1a237e;
+    }
+    
+    .contacto-texto p {
+      margin: 0;
+      color: #666;
+    }
+    
+    .formulario-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    
+    .formulario-section h3 {
+      color: #1a237e;
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1a237e;
+      font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #1a237e;
+      box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .captcha-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .captcha-image {
+      background: #e0e0e0;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #1a237e;
+      user-select: none;
+    }
+    
+    .captcha-refresh {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0.5rem;
+    }
+    
+    .captcha-refresh:hover {
+      color: #1a237e;
+    }
+    
+    .btn-enviar {
+      background: #1a237e;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    
+    .btn-enviar:hover {
+      background: #ff9800;
+    }
+    
+    .btn-enviar:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .mensaje-exito {
+      background: #e8f5e8;
+      color: #2e7d32;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      text-align: center;
+      display: none;
+    }
+    
+    .mensaje-error {
+      background: #ffebee;
+      color: #c62828;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      text-align: center;
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .contacto-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .contacto-container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">CodeaiNews</div>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#">Actualidad</a>
+        <a href="#">Afiliados</a>
+        <a href="contacto.html" class="active">Contacto</a>
+        <a href="#">Blog</a>
+      </nav>
+      <form class="search-bar">
+        <input type="text" placeholder="Buscar...">
+        <button type="submit">🔍</button>
+      </form>
+    </div>
+  </header>
+
+  <main>
+    <div class="contacto-container">
+      <div class="contacto-header">
+        <h1>Contacta con Nosotros</h1>
+        <p>¿Tienes alguna pregunta, sugerencia o quieres colaborar con CodeaiNews? Estamos aquí para ayudarte.</p>
+      </div>
+
+      <div class="contacto-content">
+        <div class="mapa-section">
+          <h3>📍 Nuestra Ubicación</h3>
+          <div class="mapa-container" id="mapa">
+            <div style="text-align: center;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
+              <strong>Centro de Innovación Tecnológica</strong><br>
+              <span>Madrid, España</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-contacto">
+          <h3>📞 Información de Contacto</h3>
+          
+          <div class="contacto-item">
+            <div class="contacto-icono">🏢</div>
+            <div class="contacto-texto">
+              <h4>Dirección</h4>
+              <p>Calle de la Innovación 123<br>28001 Madrid, España</p>
+            </div>
+          </div>
+
+          <div class="contacto-item">
+            <div class="contacto-icono">📧</div>
+            <div class="contacto-texto">
+              <h4>Email</h4>
+              <p>info@codeainews.com<br>redaccion@codeainews.com</p>
+            </div>
+          </div>
+
+          <div class="contacto-item">
+            <div class="contacto-icono">📱</div>
+            <div class="contacto-texto">
+              <h4>Teléfono</h4>
+              <p>+34 91 123 45 67<br>+34 91 123 45 68</p>
+            </div>
+          </div>
+
+          <div class="contacto-item">
+            <div class="contacto-icono">🕒</div>
+            <div class="contacto-texto">
+              <h4>Horario de Atención</h4>
+              <p>Lunes a Viernes: 9:00 - 18:00<br>Sábados: 10:00 - 14:00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="formulario-section">
+        <h3>✉️ Envíanos un Mensaje</h3>
+        <form id="contacto-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre completo *</label>
+              <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="asunto">Asunto *</label>
+            <select id="asunto" name="asunto" required>
+              <option value="">Selecciona un asunto</option>
+              <option value="consulta">Consulta general</option>
+              <option value="sugerencia">Sugerencia</option>
+              <option value="colaboracion">Colaboración</option>
+              <option value="publicidad">Publicidad</option>
+              <option value="tecnico">Soporte técnico</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="mensaje">Mensaje *</label>
+            <textarea id="mensaje" name="mensaje" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea>
+          </div>
+
+          <div class="captcha-container">
+            <label for="captcha">Verificación: </label>
+            <div class="captcha-image" id="captcha-text">ABC123</div>
+            <button type="button" class="captcha-refresh" onclick="generarCaptcha()">🔄</button>
+            <input type="text" id="captcha" name="captcha" placeholder="Escribe el código" required style="width: 150px;">
+          </div>
+
+          <button type="submit" class="btn-enviar" id="btn-enviar">Enviar Mensaje</button>
+        </form>
+
+        <div class="mensaje-exito" id="mensaje-exito">
+          ✅ ¡Mensaje enviado correctamente! Te responderemos pronto.
+        </div>
+
+        <div class="mensaje-error" id="mensaje-error">
+          ❌ Error al enviar el mensaje. Por favor, inténtalo de nuevo.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-bio">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Tux" style="height:40px;vertical-align:middle;margin-right:10px;">
+        <span><b>CodeaiNews</b> es tu portal de noticias sobre Linux, software libre y tecnología. ¡Síguenos y mantente informado!</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Sobre CodeaiNews</a>
+        <a href="#">Publicidad</a>
+        <a href="#">Política de cookies</a>
+        <a href="#">Información legal</a>
+        <a href="contacto.html">Contacto</a>
+        <a href="login.html">Acceso</a>
+      </div>
+      <div class="footer-social">
+        <a href="#" title="Twitter">🐦 Twitter</a>
+        <a href="#" title="Facebook">📘 Facebook</a>
+        <a href="#" title="YouTube">▶️ YouTube</a>
+      </div>
+      <div class="footer-ultimas">
+        <h4>Últimas noticias</h4>
+        <ul>
+          <li><a href="#">Linux domina la nube en 2024</a></li>
+          <li><a href="#">Nuevo hardware optimizado para Linux</a></li>
+          <li><a href="#">La comunidad impulsa la innovación</a></li>
+        </ul>
+      </div>
+      <div class="footer-banners">
+        <div class="banner">Banner Footer 1</div>
+        <div class="banner">Banner Footer 2</div>
+      </div>
+      <div class="footer-info">&copy; 2024 CodeaiNews. Todos los derechos reservados.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Generar CAPTCHA aleatorio
+    function generarCaptcha() {
+      const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let captcha = '';
+      for (let i = 0; i < 6; i++) {
+        captcha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+      }
+      document.getElementById('captcha-text').textContent = captcha;
+    }
+
+    // Generar CAPTCHA inicial
+    generarCaptcha();
+
+    // Manejar envío del formulario
+    document.getElementById('contacto-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const nombre = document.getElementById('nombre').value;
+      const email = document.getElementById('email').value;
+      const asunto = document.getElementById('asunto').value;
+      const mensaje = document.getElementById('mensaje').value;
+      const captcha = document.getElementById('captcha').value;
+      const captchaCorrecto = document.getElementById('captcha-text').textContent;
+      
+      // Validar CAPTCHA
+      if (captcha !== captchaCorrecto) {
+        document.getElementById('mensaje-error').textContent = '❌ Código de verificación incorrecto. Por favor, inténtalo de nuevo.';
+        document.getElementById('mensaje-error').style.display = 'block';
+        document.getElementById('mensaje-exito').style.display = 'none';
+        generarCaptcha();
+        document.getElementById('captcha').value = '';
+        return;
+      }
+      
+      // Simular envío
+      const btnEnviar = document.getElementById('btn-enviar');
+      btnEnviar.disabled = true;
+      btnEnviar.textContent = 'Enviando...';
+      
+      setTimeout(() => {
+        // Guardar en localStorage para el dashboard
+        const contactos = JSON.parse(localStorage.getItem('contactos')) || [];
+        contactos.push({
+          id: Date.now(),
+          fecha: new Date().toLocaleString('es-ES'),
+          nombre,
+          email,
+          asunto,
+          mensaje,
+          estado: 'nuevo'
+        });
+        localStorage.setItem('contactos', JSON.stringify(contactos));
+        
+        // Mostrar mensaje de éxito
+        document.getElementById('mensaje-exito').style.display = 'block';
+        document.getElementById('mensaje-error').style.display = 'none';
+        
+        // Resetear formulario
+        document.getElementById('contacto-form').reset();
+        generarCaptcha();
+        
+        // Restaurar botón
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = 'Enviar Mensaje';
+        
+        // Ocultar mensaje después de 5 segundos
+        setTimeout(() => {
+          document.getElementById('mensaje-exito').style.display = 'none';
+        }, 5000);
+      }, 2000);
+    });
+
+    // Cargar información de contacto desde localStorage si existe
+    function cargarInfoContacto() {
+      try {
+        const infoContacto = JSON.parse(localStorage.getItem('infoContacto'));
+        if (infoContacto) {
+          // Actualizar dirección
+          if (infoContacto.direccion) {
+            document.querySelector('.contacto-item:nth-child(1) .contacto-texto p').innerHTML = infoContacto.direccion;
+          }
+          
+          // Actualizar email
+          if (infoContacto.email) {
+            document.querySelector('.contacto-item:nth-child(2) .contacto-texto p').innerHTML = infoContacto.email;
+          }
+          
+          // Actualizar teléfono
+          if (infoContacto.telefono) {
+            document.querySelector('.contacto-item:nth-child(3) .contacto-texto p').innerHTML = infoContacto.telefono;
+          }
+          
+          // Actualizar horario
+          if (infoContacto.horario) {
+            document.querySelector('.contacto-item:nth-child(4) .contacto-texto p').innerHTML = infoContacto.horario;
+          }
+        }
+      } catch (e) {
+        console.log('No hay información de contacto personalizada');
+      }
+    }
+
+    // Cargar información al cargar la página
+    cargarInfoContacto();
+  </script>
+</body>
+</html>

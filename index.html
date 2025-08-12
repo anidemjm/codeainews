@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeaiNews - Portal de Noticias</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">CodeaiNews</div>
+      <nav>
+        <a href="#">Inicio</a>
+        <a href="#">Actualidad</a>
+        <a href="#">Afiliados</a>
+        <a href="contacto.html">Contacto</a>
+        <a href="blog.html">Blog</a>
+      </nav>
+      <form class="search-bar">
+        <input type="text" placeholder="Buscar...">
+        <button type="submit">🔍</button>
+      </form>
+    </div>
+  </header>
+
+  <main>
+    <aside class="banner-lateral izquierdo">
+      <div class="banner adsense-ready" data-size="300x250">
+        <div class="placeholder-banner">
+          <span>📢 Publicidad</span>
+          <small>300 x 250 px</small>
+        </div>
+      </div>
+      <div class="banner adsense-ready" data-size="300x250" style="margin-top: 1rem;">
+        <div class="placeholder-banner">
+          <span>📢 Publicidad</span>
+          <small>300 x 250 px</small>
+        </div>
+      </div>
+    </aside>
+    <section class="contenido-principal">
+      <div class="carrusel">
+        <div class="carrusel-slide active">
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80" alt="Destacada 1">
+          <div class="carrusel-caption">
+            <h3>Linux domina la nube en 2024</h3>
+            <p>El sistema operativo libre sigue creciendo en servidores y cloud.</p>
+          </div>
+        </div>
+        <div class="carrusel-slide">
+          <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80" alt="Destacada 2">
+          <div class="carrusel-caption">
+            <h3>Nuevo hardware optimizado para Linux</h3>
+            <p>Los fabricantes apuestan por la compatibilidad total.</p>
+          </div>
+        </div>
+        <div class="carrusel-slide">
+          <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80" alt="Destacada 3">
+          <div class="carrusel-caption">
+            <h3>La comunidad impulsa la innovación</h3>
+            <p>Proyectos open source marcan tendencia en 2024.</p>
+          </div>
+        </div>
+        <button class="carrusel-btn prev">&#10094;</button>
+        <button class="carrusel-btn next">&#10095;</button>
+      </div>
+      <div id="inicio-subsecciones" style="margin:2rem 0;"></div>
+      <div class="categorias">
+        <button class="categoria active" data-categoria="todas">Todas</button>
+        <button class="categoria" data-categoria="actualidad">Actualidad</button>
+        <button class="categoria" data-categoria="afiliados">Afiliados</button>
+
+        <button class="categoria" data-categoria="hardware">Hardware</button>
+        <button class="categoria" data-categoria="software">Software</button>
+        <button class="categoria" data-categoria="comunidad">Comunidad</button>
+      </div>
+      <div class="noticias">
+        <article class="noticia" data-categoria="actualidad hardware">
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80" alt="Noticia 1">
+          <div class="noticia-info">
+            <h2>Título de la Noticia 1</h2>
+            <p>Resumen de la noticia 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <div class="social-share">
+              <span>Compartir:</span>
+              <a href="#" title="Compartir en Twitter" class="twitter">🐦</a>
+              <a href="#" title="Compartir en Facebook" class="facebook">📘</a>
+              <a href="#" title="Compartir en WhatsApp" class="whatsapp">💬</a>
+            </div>
+          </div>
+        </article>
+        <div class="banner-intermedio adsense-ready" data-size="300x250">
+          <div class="placeholder-banner">
+            <span>📢 Publicidad</span>
+            <small>300 x 250 px</small>
+          </div>
+        </div>
+        <article class="noticia" data-categoria="practicos software">
+          <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=600&q=80" alt="Noticia 2">
+          <div class="noticia-info">
+            <h2>Título de la Noticia 2</h2>
+            <p>Resumen de la noticia 2. Pellentesque habitant morbi tristique senectus et netus.</p>
+            <div class="social-share">
+              <span>Compartir:</span>
+              <a href="#" title="Compartir en Twitter" class="twitter">🐦</a>
+              <a href="#" title="Compartir en Facebook" class="facebook">📘</a>
+              <a href="#" title="Compartir en WhatsApp" class="whatsapp">💬</a>
+            </div>
+          </div>
+        </article>
+        <article class="noticia" data-categoria="opinion comunidad">
+          <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80" alt="Noticia 3">
+          <div class="noticia-info">
+            <h2>Título de la Noticia 3</h2>
+            <p>Resumen de la noticia 3. Etiam porta sem malesuada magna mollis euismod.</p>
+            <div class="social-share">
+              <span>Compartir:</span>
+              <a href="#" title="Compartir en Twitter" class="twitter">🐦</a>
+              <a href="#" title="Compartir en Facebook" class="facebook">📘</a>
+              <a href="#" title="Compartir en WhatsApp" class="whatsapp">💬</a>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="newsletter">
+        <h3>Suscríbete a nuestro newsletter</h3>
+        <form id="form-newsletter">
+          <input type="email" placeholder="Tu correo electrónico" required>
+          <button type="submit">Suscribirse</button>
+        </form>
+        <div id="mensaje-newsletter"></div>
+      </div>
+    </section>
+    <aside class="banner-lateral derecho">
+      <div class="populares">
+        <h3>Más leídas</h3>
+        <ul>
+          <li><a href="#">Linux domina la nube en 2024</a></li>
+          <li><a href="#">Nuevo hardware optimizado para Linux</a></li>
+          <li><a href="#">La comunidad impulsa la innovación</a></li>
+          <li><a href="#">Guía práctica: Instala tu primer Linux</a></li>
+          <li><a href="#">¿Por qué elegir software libre?</a></li>
+        </ul>
+      </div>
+      <div class="banner adsense-ready" data-size="300x250">
+        <div class="placeholder-banner">
+          <span>📢 Publicidad</span>
+          <small>300 x 250 px</small>
+        </div>
+      </div>
+      <div class="banner adsense-ready" data-size="300x600" style="margin-top: 1rem;">
+        <div class="placeholder-banner">
+          <span>📢 Publicidad</span>
+          <small>300 x 600 px</small>
+        </div>
+      </div>
+    </aside>
+  </main>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-bio">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Tux" style="height:40px;vertical-align:middle;margin-right:10px;">
+        <span><b>CodeaiNews</b> es tu portal de noticias sobre Linux, software libre y tecnología. ¡Síguenos y mantente informado!</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Sobre CodeaiNews</a>
+        <a href="#">Publicidad</a>
+        <a href="#">Política de cookies</a>
+        <a href="#">Información legal</a>
+        <a href="contacto.html">Contacto</a>
+        <a href="login.html">Acceso</a>
+      </div>
+      <div class="footer-social">
+        <a href="#" title="Twitter">🐦 Twitter</a>
+        <a href="#" title="Facebook">📘 Facebook</a>
+        <a href="#" title="YouTube">▶️ YouTube</a>
+      </div>
+      <div class="footer-ultimas">
+        <h4>Últimas noticias</h4>
+        <ul>
+          <li><a href="#">Linux domina la nube en 2024</a></li>
+          <li><a href="#">Nuevo hardware optimizado para Linux</a></li>
+          <li><a href="#">La comunidad impulsa la innovación</a></li>
+        </ul>
+      </div>
+      <div class="footer-banners">
+        <div class="banner adsense-ready" data-size="728x90">
+          <div class="placeholder-banner">
+            <span>📢 Publicidad</span>
+            <small>728 x 90 px</small>
+          </div>
+        </div>
+        <div class="banner adsense-ready" data-size="728x90" style="margin-top: 1rem;">
+          <div class="placeholder-banner">
+            <span>📢 Publicidad</span>
+            <small>728 x 90 px</small>
+          </div>
+        </div>
+      </div>
+      <div class="footer-info">&copy; 2024 CodeaiNews. Todos los derechos reservados.</div>
+    </div>
+  </footer>
+</body>
+<script>
+  const slides = document.querySelectorAll('.carrusel-slide');
+  const prevBtn = document.querySelector('.carrusel-btn.prev');
+  const nextBtn = document.querySelector('.carrusel-btn.next');
+  let current = 0;
+
+  function showSlide(idx) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === idx);
+    });
+  }
+
+  prevBtn.addEventListener('click', () => {
+    current = (current - 1 + slides.length) % slides.length;
+    showSlide(current);
+  });
+  nextBtn.addEventListener('click', () => {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+  });
+
+  setInterval(() => {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+  }, 6000);
+
+  // Banner rotativo
+  document.querySelectorAll('.banner-rotativo').forEach(banner => {
+    let idx = 0;
+    const spans = banner.querySelectorAll('span');
+    setInterval(() => {
+      spans.forEach((s, i) => s.style.display = i === idx ? '' : 'none');
+      idx = (idx + 1) % spans.length;
+    }, 3500);
+  });
+
+  // Filtrado de noticias por categoría
+  const categoriaBtns = document.querySelectorAll('.categoria');
+  const noticias = document.querySelectorAll('.noticia');
+  categoriaBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoriaBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.getAttribute('data-categoria');
+      noticias.forEach(noticia => {
+        if(cat === 'todas' || noticia.getAttribute('data-categoria').includes(cat)) {
+          noticia.style.display = '';
+        } else {
+          noticia.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Newsletter
+  document.getElementById('form-newsletter').addEventListener('submit', function(e) {
+    e.preventDefault();
+    document.getElementById('mensaje-newsletter').textContent = '¡Gracias por suscribirte!';
+  });
+
+  // Comentarios (solo visual, no persistente)
+  document.querySelectorAll('.form-comentario').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = form.querySelector('input');
+      if(input.value.trim()) {
+        const ul = form.parentElement.querySelector('ul');
+        const li = document.createElement('li');
+        li.innerHTML = `<b>Tú:</b> ${input.value}`;
+        ul.appendChild(li);
+        input.value = '';
+      }
+    });
+  });
+
+  // Mostrar subsecciones de Inicio desde localStorage
+  function mostrarSubseccionesInicio() {
+    const cont = document.getElementById('inicio-subsecciones');
+    if (!cont) return;
+    let subsecciones = [];
+    try {
+      subsecciones = JSON.parse(localStorage.getItem('inicioSubsecciones')) || [];
+    } catch { subsecciones = []; }
+    if (subsecciones.length === 0) {
+      subsecciones = [
+        { nombre: 'Carrusel', descripcion: 'Imágenes y mensajes destacados en la portada.', imagen: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80' },
+        { nombre: 'Bienvenida', descripcion: 'Mensaje de bienvenida para los visitantes.', imagen: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80' },
+        { nombre: 'Destacados', descripcion: 'Sección con los contenidos más importantes.', imagen: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80' }
+      ];
+    }
+    cont.innerHTML = '<h2>Secciones de Inicio</h2>' +
+      subsecciones.map(sub => `
+        <div style="display:flex;align-items:center;border:1px solid #cfd8dc; border-radius:6px; margin-bottom:1rem; padding:1rem;">
+          <img src="${sub.imagen ? sub.imagen : 'https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg'}" alt="img" style="max-width:80px;max-height:60px;margin-right:1rem;border-radius:6px;">
+          <div>
+            <h3 style="margin:0 0 0.5rem 0;">${sub.nombre}</h3>
+            <p style="margin:0;">${sub.descripcion}</p>
+          </div>
+        </div>
+      `).join('');
+  }
+  mostrarSubseccionesInicio();
+  
+  // Cargar carrusel dinámicamente desde localStorage
+  function cargarCarrusel() {
+    let carruselItems = [];
+    try {
+      carruselItems = JSON.parse(localStorage.getItem('carruselItems')) || [];
+    } catch { carruselItems = []; }
+    
+    if (carruselItems.length > 0) {
+      const carrusel = document.querySelector('.carrusel');
+      const carruselSlides = carrusel.querySelectorAll('.carrusel-slide');
+      
+      carruselSlides.forEach((slide, index) => {
+        if (carruselItems[index]) {
+          const img = slide.querySelector('img');
+          const caption = slide.querySelector('.carrusel-caption h3');
+          const desc = slide.querySelector('.carrusel-caption p');
+          
+          if (img) img.src = carruselItems[index].imagen;
+          if (caption) caption.textContent = carruselItems[index].titulo;
+          if (desc) desc.textContent = carruselItems[index].descripcion;
+        }
+      });
+    }
+  }
+  
+  // Cargar noticias dinámicamente desde localStorage
+  function cargarNoticias() {
+    let noticias = [];
+    try {
+      noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+    } catch { noticias = []; }
+    
+    if (noticias.length > 0) {
+      const noticiasContainer = document.querySelector('.noticias');
+      const noticiasExistentes = noticiasContainer.querySelectorAll('.noticia');
+      
+      noticiasExistentes.forEach((noticia, index) => {
+        if (noticias[index]) {
+          const img = noticia.querySelector('img');
+          const titulo = noticia.querySelector('h2');
+          const resumen = noticia.querySelector('p');
+          
+          if (img) img.src = noticias[index].imagen;
+          if (titulo) titulo.textContent = noticias[index].titulo;
+          if (resumen) resumen.textContent = noticias[index].resumen;
+        }
+      });
+    }
+  }
+  
+  // Cargar banners dinámicamente desde localStorage
+  function cargarBanners() {
+    let banners = [];
+    try {
+      banners = JSON.parse(localStorage.getItem('banners')) || [];
+    } catch { banners = []; }
+    
+    if (banners.length > 0) {
+      // Actualizar banners laterales
+      const bannerIzquierdo = document.querySelector('.banner-lateral.izquierdo .banner-rotativo');
+      const bannerDerecho = document.querySelector('.banner-lateral.derecho .banner-rotativo');
+      
+      if (bannerIzquierdo) {
+        const bannersIzq = banners.filter(b => b.posicion === 'izquierdo');
+        bannerIzquierdo.innerHTML = bannersIzq.map(b => `<span>${b.texto}</span>`).join('');
+      }
+      
+      if (bannerDerecho) {
+        const bannersDer = banners.filter(b => b.posicion === 'derecho');
+        bannerDerecho.innerHTML = bannersDer.map(b => `<span>${b.texto}</span>`).join('');
+      }
+    }
+  }
+  
+  cargarCarrusel();
+  cargarNoticias();
+  cargarBanners();
+</script>
+</html> 

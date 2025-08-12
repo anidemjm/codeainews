@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Control - CodeaiNews</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background: #f4f6fa;
+    }
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background: #1a237e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem 1rem 1rem;
+      gap: 1.5rem;
+    }
+    .sidebar h2 {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .sidebar button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.05rem;
+      text-align: left;
+      padding: 0.7rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .sidebar button.active, .sidebar button:hover {
+      background: #ff9800;
+      color: #fff;
+    }
+    .dashboard-main {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      margin: 2rem;
+      padding: 2rem 2.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      min-width: 0;
+    }
+    
+    .section-actions {
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-actions button {
+      background: #1a237e;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    
+    .section-actions button:hover {
+      background: #ff9800;
+    }
+    
+    .dashboard-section h3 {
+      color: #1a237e;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+    }
+    
+    button {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    button:hover {
+      background: #e0e0e0;
+    }
+    
+    button[onclick*="editar"] {
+      background: #2196f3;
+      color: #fff;
+      border-color: #2196f3;
+    }
+    
+    button[onclick*="editar"]:hover {
+      background: #1976d2;
+    }
+    
+    button[onclick*="eliminar"] {
+      background: #f44336;
+      color: #fff;
+      border-color: #f44336;
+    }
+    
+    button[onclick*="eliminar"]:hover {
+      background: #d32f2f;
+    }
+    
+    input, textarea, select {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #1a237e;
+      box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1a237e;
+      font-weight: 500;
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .logout {
+      margin-top: auto;
+      background: #fff;
+      color: #1a237e;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .logout:hover {
+      background: #ff9800;
+      color: #fff;
+    }
+    @media (max-width: 900px) {
+      .dashboard-container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 0.5rem;
+        padding: 1rem;
+        justify-content: center;
+      }
+      .sidebar h2 {
+        display: none;
+      }
+      .dashboard-main {
+        margin: 1rem 0.5rem;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <h2>Admin Panel</h2>
+      <button class="nav-btn active" data-section="inicio">Inicio</button>
+      <button class="nav-btn" data-section="noticias">Noticias</button>
+      <button class="nav-btn" data-section="banners">Banners</button>
+      <button class="nav-btn" data-section="categorias">Categorías</button>
+      <button class="nav-btn" data-section="blog">Blog</button>
+      <button class="nav-btn" data-section="contacto">Contacto</button>
+      <button class="nav-btn" data-section="footer">Footer</button>
+      <button class="logout">Cerrar sesión</button>
+    </nav>
+    <main class="dashboard-main">
+      <section id="inicio" class="dashboard-section">
+        <h3>Administrar Inicio</h3>
+        <div class="section-actions">
+          <button id="add-subseccion-btn">Añadir subsección</button>
+        </div>
+        <div id="subseccion-form-container" style="display:none; margin:1rem 0;">
+          <form id="subseccion-form">
+            <input type="hidden" id="subseccion-id">
+            <input type="text" id="subseccion-nombre" placeholder="Nombre de la subsección" required style="margin-bottom:0.5rem; width:100%;">
+            <textarea id="subseccion-descripcion" placeholder="Descripción" required style="margin-bottom:0.5rem; width:100%;"></textarea>
+            <input type="file" id="subseccion-imagen" accept="image/*" style="margin-bottom:0.5rem;">
+            <div id="subseccion-imagen-preview" style="margin-bottom:0.5rem;"></div>
+            <button type="submit">Guardar</button>
+            <button type="button" id="cancelar-subseccion" style="margin-left:0.5rem;">Cancelar</button>
+          </form>
+        </div>
+        <table id="subsecciones-table" style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="background:#f4f6fa;">
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Nombre</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Descripción</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="subsecciones-tbody">
+            <!-- Subsecciones aquí -->
+          </tbody>
+        </table>
+        <div id="panel-administrar-subseccion" style="display:none; margin-top:2rem; border:2px solid #ff9800; border-radius:8px; padding:1.5rem; background:#fff9ec;"></div>
+      </section>
+
+      <section id="noticias" class="dashboard-section" style="display:none;">
+        <h3>Administrar Noticias</h3>
+        <div class="section-actions">
+          <button id="add-noticia-btn">Añadir Noticia</button>
+        </div>
+        <div id="noticia-form-container" style="display:none; margin:1rem 0;">
+          <form id="noticia-form">
+            <input type="hidden" id="noticia-id">
+            <input type="text" id="noticia-titulo" placeholder="Título de la noticia" required style="margin-bottom:0.5rem; width:100%;">
+            <textarea id="noticia-resumen" placeholder="Resumen de la noticia" required style="margin-bottom:0.5rem; width:100%;"></textarea>
+            <input type="file" id="noticia-imagen" accept="image/*" style="margin-bottom:0.5rem;">
+            <div id="noticia-imagen-preview" style="margin-bottom:0.5rem;"></div>
+            <select id="noticia-categoria" required style="margin-bottom:0.5rem; width:100%;">
+              <option value="">Seleccionar categoría</option>
+              <option value="actualidad">Actualidad</option>
+              <option value="afiliados">Afiliados</option>
+      
+              <option value="hardware">Hardware</option>
+              <option value="software">Software</option>
+              <option value="comunidad">Comunidad</option>
+            </select>
+            <button type="submit">Guardar</button>
+            <button type="button" id="cancelar-noticia" style="margin-left:0.5rem;">Cancelar</button>
+          </form>
+        </div>
+        <table id="noticias-table" style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="background:#f4f6fa;">
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Imagen</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Título</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Categoría</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="noticias-tbody">
+            <!-- Noticias aquí -->
+          </tbody>
+        </table>
+      </section>
+
+      <section id="banners" class="dashboard-section" style="display:none;">
+        <h3>Administrar Banners</h3>
+        <div class="section-actions">
+          <button id="add-banner-btn">Añadir Banner</button>
+        </div>
+        <div id="banner-form-container" style="display:none; margin:1rem 0;">
+          <form id="banner-form">
+            <input type="hidden" id="banner-id">
+            <input type="text" id="banner-texto" placeholder="Texto del banner" required style="margin-bottom:0.5rem; width:100%;">
+            <select id="banner-posicion" required style="margin-bottom:0.5rem; width:100%;">
+              <option value="">Seleccionar posición</option>
+              <option value="izquierdo">Banner Izquierdo</option>
+              <option value="derecho">Banner Derecho</option>
+              <option value="intermedio">Banner Intermedio</option>
+              <option value="footer">Banner Footer</option>
+            </select>
+            <input type="number" id="banner-duracion" placeholder="Duración en segundos" value="3" min="1" max="10" style="margin-bottom:0.5rem; width:100%;">
+            <button type="submit">Guardar</button>
+            <button type="button" id="cancelar-banner" style="margin-left:0.5rem;">Cancelar</button>
+          </form>
+        </div>
+        <table id="banners-table" style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="background:#f4f6fa;">
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Texto</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Posición</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Duración</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="banners-tbody">
+            <!-- Banners aquí -->
+          </tbody>
+        </table>
+      </section>
+
+      <section id="categorias" class="dashboard-section" style="display:none;">
+        <h3>Administrar Categorías</h3>
+        <div class="section-actions">
+          <button id="add-categoria-btn">Añadir Categoría</button>
+        </div>
+        <div id="categoria-form-container" style="display:none; margin:1rem 0;">
+          <form id="categoria-form">
+            <input type="hidden" id="categoria-id">
+            <input type="text" id="categoria-nombre" placeholder="Nombre de la categoría" required style="margin-bottom:0.5rem; width:100%;">
+            <input type="color" id="categoria-color" style="margin-bottom:0.5rem; width:100px;">
+            <button type="submit">Guardar</button>
+            <button type="button" id="cancelar-categoria" style="margin-left:0.5rem;">Cancelar</button>
+          </form>
+        </div>
+        <table id="categorias-table" style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="background:#f4f6fa;">
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Nombre</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Color</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="categorias-tbody">
+            <!-- Categorías aquí -->
+          </tbody>
+        </table>
+      </section>
+
+      <section id="blog" class="dashboard-section" style="display:none;">
+        <h3>Administrar Blog</h3>
+        
+        <div class="section-actions">
+          <button id="add-blog-post-btn">✍️ Crear Nueva Entrada</button>
+          <button id="refresh-blog-btn" style="margin-left:0.5rem;">🔄 Actualizar Lista</button>
+        </div>
+        
+        <div id="blog-post-form-container" style="display:none; margin:1rem 0; background:#f9f9f9; padding:1.5rem; border-radius:8px; border:1px solid #ddd;">
+          <form id="blog-post-form">
+            <h4 style="margin:0 0 1rem 0; color:#1a237e;">Crear/Editar Entrada del Blog</h4>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Título del Post *</label>
+                <input type="text" id="blog-titulo" placeholder="Título atractivo para SEO" required style="width:100%;">
+              </div>
+              <div class="form-group">
+                <label>Categoría *</label>
+                <select id="blog-categoria" required style="width:100%;">
+                  <option value="">Seleccionar categoría</option>
+                  <option value="tutoriales">Tutoriales</option>
+                  <option value="analisis">Análisis</option>
+                  <option value="noticias">Noticias</option>
+                  <option value="afiliados">Afiliados</option>
+                  <option value="reviews">Reviews</option>
+                  <option value="hardware">Hardware</option>
+                  <option value="software">Software</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Autor</label>
+                <input type="text" id="blog-autor" placeholder="Nombre del autor" value="Admin CodeaiNews" style="width:100%;">
+              </div>
+              <div class="form-group">
+                <label>Fecha de Publicación</label>
+                <input type="date" id="blog-fecha" style="width:100%;">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Resumen/Excerpt *</label>
+              <textarea id="blog-excerpt" placeholder="Resumen corto del post (importante para SEO)" rows="3" required style="width:100%;"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Contenido Completo *</label>
+              <textarea id="blog-contenido" placeholder="Contenido completo del post. Puedes usar HTML básico." rows="8" required style="width:100%; font-family:monospace;"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Imagen Destacada</label>
+              <input type="file" id="blog-imagen" accept="image/*" style="width:100%;">
+              <div id="blog-imagen-preview" style="margin-top:0.5rem;"></div>
+            </div>
+            
+            <div class="form-group">
+              <label>Etiquetas (SEO) *</label>
+              <input type="text" id="blog-etiquetas" placeholder="etiqueta1, etiqueta2, etiqueta3 (separadas por comas)" required style="width:100%;">
+              <small style="color:#666;">Las etiquetas son cruciales para SEO. Usa palabras clave relevantes.</small>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>URL Amigable (Slug)</label>
+                <input type="text" id="blog-slug" placeholder="url-amigable-del-post" style="width:100%;">
+                <small style="color:#666;">Se generará automáticamente si lo dejas vacío.</small>
+              </div>
+              <div class="form-group">
+                <label>Estado</label>
+                <select id="blog-estado" style="width:100%;">
+                  <option value="borrador">Borrador</option>
+                  <option value="publicado">Publicado</option>
+                  <option value="programado">Programado</option>
+                </select>
+              </div>
+            </div>
+            
+            <div style="margin-top:1.5rem;">
+              <button type="submit" style="background:#1a237e; color:#fff; border:none; padding:0.8rem 1.5rem; border-radius:6px; cursor:pointer;">💾 Guardar Entrada</button>
+              <button type="button" id="cancelar-blog-post" style="margin-left:0.5rem; background:#f44336; color:#fff; border:none; padding:0.8rem 1.5rem; border-radius:6px; cursor:pointer;">❌ Cancelar</button>
+            </div>
+          </form>
+        </div>
+        
+        <table id="blog-posts-table" style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="background:#f4f6fa;">
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Imagen</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Título</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Categoría</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Estado</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Etiquetas</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="blog-posts-tbody">
+            <!-- Posts del blog aquí -->
+          </tbody>
+        </table>
+      </section>
+
+      <section id="contacto" class="dashboard-section" style="display:none;">
+        <h3>Administrar Contacto</h3>
+        
+        <!-- Información de Contacto -->
+        <div style="background:#e8f5e8; border:1px solid #c8e6c9; padding:1rem; border-radius:6px; margin:1rem 0;">
+          <h4 style="margin:0 0 1rem 0; color:#2e7d32;">📞 Información de Contacto</h4>
+          <div class="section-actions">
+            <button id="edit-info-contacto-btn">Editar Información</button>
+          </div>
+        </div>
+        
+        <div id="info-contacto-form-container" style="display:none; margin:1rem 0; background:#f9f9f9; padding:1.5rem; border-radius:8px;">
+          <form id="info-contacto-form">
+            <h4 style="margin:0 0 1rem 0;">Editar Información de Contacto</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Dirección</label>
+                <textarea id="contacto-direccion" placeholder="Dirección completa" rows="3" style="width:100%;">Calle de la Innovación 123&#10;28001 Madrid, España</textarea>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <textarea id="contacto-email" placeholder="Emails de contacto" rows="3" style="width:100%;">info@codeainews.com&#10;redaccion@codeainews.com</textarea>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Teléfono</label>
+                <textarea id="contacto-telefono" placeholder="Números de teléfono" rows="3" style="width:100%;">+34 91 123 45 67&#10;+34 91 123 45 68</textarea>
+              </div>
+              <div class="form-group">
+                <label>Horario de Atención</label>
+                <textarea id="contacto-horario" placeholder="Horarios de atención" rows="3" style="width:100%;">Lunes a Viernes: 9:00 - 18:00&#10;Sábados: 10:00 - 14:00</textarea>
+              </div>
+            </div>
+            <button type="submit">Guardar Cambios</button>
+            <button type="button" id="cancelar-info-contacto" style="margin-left:0.5rem;">Cancelar</button>
+          </form>
+        </div>
+
+        <!-- Mensajes de Contacto -->
+        <div style="background:#fff3cd; border:1px solid #ffeaa7; padding:1rem; border-radius:6px; margin:2rem 0;">
+          <h4 style="margin:0 0 1rem 0; color:#856404;">✉️ Mensajes de Contacto</h4>
+          <div class="section-actions">
+            <button id="refresh-contactos-btn">Actualizar Lista</button>
+          </div>
+        </div>
+        
+        <table id="contactos-table" style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="background:#f4f6fa;">
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Fecha</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Nombre</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Asunto</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Estado</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="contactos-tbody">
+            <!-- Mensajes de contacto aquí -->
+          </tbody>
+        </table>
+      </section>
+
+      <section id="footer" class="dashboard-section" style="display:none;">
+        <h3>Administrar Footer</h3>
+        <div class="section-actions">
+          <button id="add-footer-item-btn">Añadir Elemento</button>
+        </div>
+        <div id="footer-form-container" style="display:none; margin:1rem 0;">
+          <form id="footer-form">
+            <input type="hidden" id="footer-item-id">
+            <input type="text" id="footer-item-titulo" placeholder="Título del elemento" required style="margin-bottom:0.5rem; width:100%;">
+            <textarea id="footer-item-contenido" placeholder="Contenido del elemento" required style="margin-bottom:0.5rem; width:100%;"></textarea>
+            <select id="footer-item-tipo" required style="margin-bottom:0.5rem; width:100%;">
+              <option value="">Seleccionar tipo</option>
+              <option value="bio">Biografía</option>
+              <option value="links">Enlaces</option>
+              <option value="social">Redes Sociales</option>
+              <option value="ultimas">Últimas Noticias</option>
+            </select>
+            <button type="submit">Guardar</button>
+            <button type="button" id="cancelar-footer-item" style="margin-left:0.5rem;">Cancelar</button>
+          </form>
+        </div>
+        <table id="footer-table" style="width:100%; border-collapse:collapse; margin-top:1rem;">
+          <thead>
+            <tr style="background:#f4f6fa;">
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Título</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Tipo</th>
+              <th style="padding:0.5rem; border:1px solid #cfd8dc;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="footer-tbody">
+            <!-- Elementos del footer aquí -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+  <script>
+    // Protección de acceso: solo si está logueado como admin
+    if (!localStorage.getItem('adminLogged')) {
+      window.location.href = 'login.html';
+    }
+    // Navegación lateral
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.dashboard-section');
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sections.forEach(sec => {
+          sec.style.display = sec.id === btn.getAttribute('data-section') ? '' : 'none';
+        });
+      });
+    });
+    // Logout
+    document.querySelector('.logout').onclick = () => {
+      localStorage.removeItem('adminLogged');
+      window.location.href = 'index.html';
+    };
+
+    // --- Subsecciones CRUD para INICIO ---
+    let subsecciones = [
+      { id: 1, nombre: 'Carrusel', descripcion: 'Imágenes y mensajes destacados en la portada.' },
+      { id: 2, nombre: 'Bienvenida', descripcion: 'Mensaje de bienvenida para los visitantes.' },
+      { id: 3, nombre: 'Destacados', descripcion: 'Sección con los contenidos más importantes.' }
+    ];
+    const subseccionesTbody = document.getElementById('subsecciones-tbody');
+    const subseccionFormContainer = document.getElementById('subseccion-form-container');
+    const subseccionForm = document.getElementById('subseccion-form');
+    const addSubseccionBtn = document.getElementById('add-subseccion-btn');
+    const cancelarSubseccionBtn = document.getElementById('cancelar-subseccion');
+    const subseccionIdInput = document.getElementById('subseccion-id');
+    const subseccionNombreInput = document.getElementById('subseccion-nombre');
+    const subseccionDescripcionInput = document.getElementById('subseccion-descripcion');
+    const subseccionImagenInput = document.getElementById('subseccion-imagen');
+    const subseccionImagenPreview = document.getElementById('subseccion-imagen-preview');
+
+    let imagenTemporal = '';
+    subseccionImagenInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          imagenTemporal = evt.target.result;
+          subseccionImagenPreview.innerHTML = `<img src="${imagenTemporal}" alt="Previsualización" style="max-width:120px;max-height:80px;">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imagenTemporal = '';
+        subseccionImagenPreview.innerHTML = '';
+      }
+    });
+
+    function renderSubsecciones() {
+      subseccionesTbody.innerHTML = '';
+      subsecciones.forEach(sub => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style='padding:0.5rem; border:1px solid #cfd8dc;'>${sub.imagen ? `<img src='${sub.imagen}' alt='img' style='max-width:60px;max-height:40px;vertical-align:middle;margin-right:8px;'>` : ''}${sub.nombre}</td>
+          <td style='padding:0.5rem; border:1px solid #cfd8dc;'>${sub.descripcion}</td>
+          <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+            <button onclick="editarSubseccion(${sub.id})">Editar</button>
+            <button onclick="eliminarSubseccion(${sub.id})" style='margin-left:0.5rem;'>Eliminar</button>
+            <button onclick="administrarSubseccion(${sub.id})" style='margin-left:0.5rem;background:#ff9800;color:#fff;'>Administrar</button>
+          </td>
+        `;
+        subseccionesTbody.appendChild(tr);
+      });
+      // Guardar subsecciones en localStorage
+      localStorage.setItem('inicioSubsecciones', JSON.stringify(subsecciones));
+    }
+    function resetSubseccionForm() {
+      subseccionIdInput.value = '';
+      subseccionNombreInput.value = '';
+      subseccionDescripcionInput.value = '';
+      subseccionImagenInput.value = '';
+      subseccionImagenPreview.innerHTML = '';
+      imagenTemporal = '';
+    }
+    addSubseccionBtn.onclick = () => {
+      resetSubseccionForm();
+      subseccionFormContainer.style.display = '';
+    };
+    cancelarSubseccionBtn.onclick = () => {
+      subseccionFormContainer.style.display = 'none';
+      resetSubseccionForm();
+    };
+    subseccionForm.onsubmit = function(e) {
+      e.preventDefault();
+      const id = subseccionIdInput.value;
+      const nombre = subseccionNombreInput.value;
+      const descripcion = subseccionDescripcionInput.value;
+      let imagen = imagenTemporal;
+      if (id) {
+        // Editar
+        const sub = subsecciones.find(s => s.id == id);
+        sub.nombre = nombre;
+        sub.descripcion = descripcion;
+        if (imagen) sub.imagen = imagen;
+      } else {
+        // Añadir
+        subsecciones.push({ id: Date.now(), nombre, descripcion, imagen });
+      }
+      renderSubsecciones();
+      subseccionFormContainer.style.display = 'none';
+      resetSubseccionForm();
+    };
+    window.editarSubseccion = function(id) {
+      const sub = subsecciones.find(s => s.id == id);
+      subseccionIdInput.value = sub.id;
+      subseccionNombreInput.value = sub.nombre;
+      subseccionDescripcionInput.value = sub.descripcion;
+      imagenTemporal = sub.imagen || '';
+      subseccionImagenPreview.innerHTML = imagenTemporal ? `<img src="${imagenTemporal}" alt="Previsualización" style="max-width:120px;max-height:80px;">` : '';
+      subseccionImagenInput.value = '';
+      subseccionFormContainer.style.display = '';
+    };
+    window.eliminarSubseccion = function(id) {
+      if (confirm('¿Seguro que deseas eliminar esta subsección?')) {
+        subsecciones = subsecciones.filter(s => s.id != id);
+        renderSubsecciones();
+      }
+    };
+    window.administrarSubseccion = function(id) {
+      const sub = subsecciones.find(s => s.id == id);
+      const panel = document.getElementById('panel-administrar-subseccion');
+      panel.style.display = '';
+      if(sub.nombre === 'Carrusel') {
+        renderCarruselAdmin(panel);
+      } else if(sub.nombre === 'Bienvenida') {
+        renderBienvenidaAdmin(panel);
+      } else if(sub.nombre === 'Destacados') {
+        renderDestacadosAdmin(panel);
+      } else {
+        panel.innerHTML = `
+          <h4>Administrar contenido de: <span style='color:#ff9800'>${sub.nombre}</span></h4>
+          <p>Aquí podrás gestionar el contenido específico de esta subsección.</p>
+          <div style='margin:1rem 0; color:#888;'>[Estructura base: aquí irá el CRUD de ${sub.nombre}]</div>
+          <button onclick="document.getElementById('panel-administrar-subseccion').style.display='none'" style='margin-top:1rem;'>Cerrar</button>
+        `;
+      }
+    }
+    
+    function renderBienvenidaAdmin(panel) {
+      let bienvenida = localStorage.getItem('bienvenida') || 'Bienvenido a CodeaiNews, tu portal de noticias sobre Linux, software libre y tecnología.';
+      panel.innerHTML = `
+        <h4>Administrar Mensaje de Bienvenida</h4>
+        <div style='background:#f9f9f9; padding:1rem; border-radius:6px; margin:1rem 0;'>
+          <strong>Mensaje actual:</strong><br>
+          <p style='margin:0.5rem 0; font-style:italic;'>"${bienvenida}"</p>
+        </div>
+        <form id='bienvenida-form'>
+          <textarea id='bienvenida-texto' placeholder='Nuevo mensaje de bienvenida' required style='width:100%; height:100px; margin-bottom:1rem;'>${bienvenida}</textarea>
+          <button type='submit'>Actualizar Mensaje</button>
+          <button type='button' onclick="document.getElementById('panel-administrar-subseccion').style.display='none'" style='margin-left:0.5rem;'>Cerrar</button>
+        </form>
+      `;
+      
+      document.getElementById('bienvenida-form').onsubmit = function(e) {
+        e.preventDefault();
+        const nuevoMensaje = document.getElementById('bienvenida-texto').value;
+        localStorage.setItem('bienvenida', nuevoMensaje);
+        alert('Mensaje de bienvenida actualizado correctamente');
+        renderBienvenidaAdmin(panel);
+      };
+    }
+    
+    function renderDestacadosAdmin(panel) {
+      let destacados = JSON.parse(localStorage.getItem('destacados')) || [
+        { titulo: 'Linux domina la nube', descripcion: 'El sistema operativo libre sigue creciendo' },
+        { titulo: 'Nuevo hardware Linux', descripcion: 'Los fabricantes apuestan por la compatibilidad' }
+      ];
+      
+      panel.innerHTML = `
+        <h4>Administrar Contenidos Destacados</h4>
+        <div style='background:#f9f9f9; padding:1rem; border-radius:6px; margin:1rem 0;'>
+          <strong>Destacados actuales:</strong><br>
+          ${destacados.map((item, i) => `
+            <div style='margin:0.5rem 0; padding:0.5rem; background:#fff; border-radius:4px;'>
+              <strong>${i+1}. ${item.titulo}</strong><br>
+              <span style='color:#666;'>${item.descripcion}</span>
+            </div>
+          `).join('')}
+        </div>
+        <button onclick="document.getElementById('panel-administrar-subseccion').style.display='none'" style='margin-top:1rem;'>Cerrar</button>
+      `;
+    }
+
+    // --- Gestión Carrusel ---
+    function renderCarruselAdmin(panel) {
+      let carruselItems = [];
+      try {
+        carruselItems = JSON.parse(localStorage.getItem('carruselItems')) || [];
+      } catch { carruselItems = []; }
+      
+      // Si no hay items, mostrar mensaje
+      if (carruselItems.length === 0) {
+        panel.innerHTML = `
+          <h4>Administrar Carrusel</h4>
+          <div style='background:#fff3cd; border:1px solid #ffeaa7; padding:1rem; border-radius:6px; margin:1rem 0;'>
+            <strong>⚠️ No hay elementos en el carrusel</strong><br>
+            <span style='color:#856404;'>Añade fotos/noticias para que aparezcan en el slider principal de la página.</span>
+          </div>
+          <button id='add-carrusel-item-btn' style='margin-bottom:1rem;background:#1a237e;color:#fff;'>Añadir primera foto/noticia</button>
+          <div id='carrusel-form-container' style='display:none; margin-top:1.5rem;'></div>
+          <button onclick="document.getElementById('panel-administrar-subseccion').style.display='none'" style='margin-top:1rem;'>Cerrar</button>
+        `;
+      } else {
+        panel.innerHTML = `
+          <h4>Administrar Carrusel</h4>
+          <div style='background:#e8f5e8; border:1px solid #c8e6c9; padding:1rem; border-radius:6px; margin:1rem 0;'>
+            <strong>✅ Carrusel activo con ${carruselItems.length} elemento(s)</strong><br>
+            <span style='color:#2e7d32;'>Estos elementos se muestran en rotación en la página principal.</span>
+          </div>
+          <button id='add-carrusel-item-btn' style='margin-bottom:1rem;background:#1a237e;color:#fff;'>Añadir foto/noticia</button>
+          <table style='width:100%;border-collapse:collapse;'>
+            <thead><tr style='background:#f4f6fa;'><th>Imagen</th><th>Título</th><th>Descripción</th><th>Acciones</th></tr></thead>
+            <tbody id='carrusel-items-tbody'>
+              ${carruselItems.map((item,i) => `
+                <tr>
+                  <td style='padding:0.5rem; border:1px solid #cfd8dc;'><img src='${item.imagen}' alt='img' style='max-width:80px;max-height:60px; border-radius:4px;'></td>
+                  <td style='padding:0.5rem; border:1px solid #cfd8dc;'><strong>${item.titulo}</strong></td>
+                  <td style='padding:0.5rem; border:1px solid #cfd8dc;'>${item.descripcion}</td>
+                  <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+                    <button onclick='editarCarruselItem(${i})'>Editar</button>
+                    <button onclick='eliminarCarruselItem(${i})' style='margin-left:0.5rem;'>Eliminar</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div id='carrusel-form-container' style='display:none; margin-top:1.5rem;'></div>
+          <button onclick="document.getElementById('panel-administrar-subseccion').style.display='none'" style='margin-top:1.5rem;'>Cerrar</button>
+        `;
+      }
+      document.getElementById('add-carrusel-item-btn').onclick = () => mostrarCarruselForm(panel, null);
+    }
+
+    window.editarCarruselItem = function(idx) {
+      const panel = document.getElementById('panel-administrar-subseccion');
+      mostrarCarruselForm(panel, idx);
+    }
+    window.eliminarCarruselItem = function(idx) {
+      if(confirm('¿Seguro que deseas eliminar esta foto/noticia del carrusel?')) {
+        let carruselItems = [];
+        try {
+          carruselItems = JSON.parse(localStorage.getItem('carruselItems')) || [];
+        } catch { carruselItems = []; }
+        carruselItems.splice(idx,1);
+        localStorage.setItem('carruselItems', JSON.stringify(carruselItems));
+        renderCarruselAdmin(document.getElementById('panel-administrar-subseccion'));
+      }
+    }
+    function mostrarCarruselForm(panel, idx) {
+      let carruselItems = [];
+      try {
+        carruselItems = JSON.parse(localStorage.getItem('carruselItems')) || [];
+      } catch { carruselItems = []; }
+      let item = idx!=null ? carruselItems[idx] : { imagen:'', titulo:'', descripcion:'' };
+      let formHtml = `
+        <form id='carrusel-form' style='background:#fff;padding:1rem;border-radius:8px;border:1px solid #cfd8dc;'>
+          <label>Imagen (obligatoria):</label><br>
+          <input type='file' id='carrusel-imagen' accept='image/*' ${item.imagen ? '' : ''} required><br>
+          <div id='carrusel-imagen-preview' style='margin:0.5rem 0;'>${item.imagen ? `<img src='${item.imagen}' style='max-width:120px;max-height:80px;'>` : ''}</div>
+          <input type='text' id='carrusel-titulo' placeholder='Título' value="${item.titulo.replace(/"/g,'&quot;')}" required style='margin-bottom:0.5rem;width:100%;'><br>
+          <textarea id='carrusel-descripcion' placeholder='Descripción' required style='margin-bottom:0.5rem;width:100%;'>${item.descripcion}</textarea><br>
+          <button type='submit'>Guardar</button>
+          <button type='button' id='cancelar-carrusel-form' style='margin-left:0.5rem;'>Cancelar</button>
+        </form>
+      `;
+      document.getElementById('carrusel-form-container').innerHTML = formHtml;
+      document.getElementById('carrusel-form-container').style.display = '';
+      let imagenTemporal = item.imagen || '';
+      const imagenInput = document.getElementById('carrusel-imagen');
+      const imagenPreview = document.getElementById('carrusel-imagen-preview');
+      imagenInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            imagenTemporal = evt.target.result;
+            imagenPreview.innerHTML = `<img src='${imagenTemporal}' style='max-width:120px;max-height:80px;'>`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      document.getElementById('cancelar-carrusel-form').onclick = function() {
+        document.getElementById('carrusel-form-container').style.display = 'none';
+      };
+      document.getElementById('carrusel-form').onsubmit = function(e) {
+        e.preventDefault();
+        const titulo = document.getElementById('carrusel-titulo').value;
+        const descripcion = document.getElementById('carrusel-descripcion').value;
+        if(!imagenTemporal) {
+          alert('La imagen es obligatoria.');
+          return;
+        }
+        if(idx!=null) {
+          carruselItems[idx] = { imagen: imagenTemporal, titulo, descripcion };
+        } else {
+          carruselItems.push({ imagen: imagenTemporal, titulo, descripcion });
+        }
+        localStorage.setItem('carruselItems', JSON.stringify(carruselItems));
+        renderCarruselAdmin(panel);
+      }
+    }
+    renderSubsecciones();
+    
+    // --- Gestión de Noticias ---
+    let noticias = [
+      { id: 1, titulo: 'Linux domina la nube en 2024', resumen: 'El sistema operativo libre sigue creciendo en servidores y cloud.', imagen: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80', categoria: 'actualidad' },
+      { id: 2, titulo: 'Nuevo hardware optimizado para Linux', resumen: 'Los fabricantes apuestan por la compatibilidad total.', imagen: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=600&q=80', categoria: 'hardware' },
+      { id: 3, titulo: 'La comunidad impulsa la innovación', resumen: 'Proyectos open source marcan tendencia en 2024.', imagen: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80', categoria: 'comunidad' }
+    ];
+    
+    const noticiasTbody = document.getElementById('noticias-tbody');
+    const noticiaFormContainer = document.getElementById('noticia-form-container');
+    const noticiaForm = document.getElementById('noticia-form');
+    const addNoticiaBtn = document.getElementById('add-noticia-btn');
+    const cancelarNoticiaBtn = document.getElementById('cancelar-noticia');
+    const noticiaIdInput = document.getElementById('noticia-id');
+    const noticiaTituloInput = document.getElementById('noticia-titulo');
+    const noticiaResumenInput = document.getElementById('noticia-resumen');
+    const noticiaImagenInput = document.getElementById('noticia-imagen');
+    const noticiaImagenPreview = document.getElementById('noticia-imagen-preview');
+    const noticiaCategoriaInput = document.getElementById('noticia-categoria');
+    
+    let noticiaImagenTemporal = '';
+    noticiaImagenInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          noticiaImagenTemporal = evt.target.result;
+          noticiaImagenPreview.innerHTML = `<img src="${noticiaImagenTemporal}" alt="Previsualización" style="max-width:120px;max-height:80px;">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        noticiaImagenTemporal = '';
+        noticiaImagenPreview.innerHTML = '';
+      }
+    });
+    
+    function renderNoticias() {
+      noticiasTbody.innerHTML = '';
+      
+      if (noticias.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="4" style='padding:2rem; text-align:center; color:#666; background:#f9f9f9;'>
+            <div style='margin-bottom:1rem;'>📰</div>
+            <strong>No hay noticias publicadas</strong><br>
+            <span style='font-size:0.9rem;'>Añade la primera noticia para comenzar</span>
+          </td>
+        `;
+        noticiasTbody.appendChild(tr);
+      } else {
+        noticias.forEach(noticia => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>${noticia.imagen ? `<img src='${noticia.imagen}' alt='img' style='max-width:60px;max-height:40px;vertical-align:middle;margin-right:8px; border-radius:4px;'>` : '<span style="color:#999;">Sin imagen</span>'}</td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><strong>${noticia.titulo}</strong><br><span style="font-size:0.8rem; color:#666;">${noticia.resumen.substring(0, 50)}...</span></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><span style="background:#e3f2fd; padding:0.2rem 0.5rem; border-radius:3px; font-size:0.8rem;">${noticia.categoria}</span></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <button onclick="editarNoticia(${noticia.id})">Editar</button>
+              <button onclick="eliminarNoticia(${noticia.id})" style='margin-left:0.5rem;'>Eliminar</button>
+            </td>
+          `;
+          noticiasTbody.appendChild(tr);
+        });
+      }
+      
+      localStorage.setItem('noticias', JSON.stringify(noticias));
+    }
+    
+    function resetNoticiaForm() {
+      noticiaIdInput.value = '';
+      noticiaTituloInput.value = '';
+      noticiaResumenInput.value = '';
+      noticiaImagenInput.value = '';
+      noticiaImagenPreview.innerHTML = '';
+      noticiaCategoriaInput.value = '';
+      noticiaImagenTemporal = '';
+    }
+    
+    addNoticiaBtn.onclick = () => {
+      resetNoticiaForm();
+      noticiaFormContainer.style.display = '';
+    };
+    
+    cancelarNoticiaBtn.onclick = () => {
+      noticiaFormContainer.style.display = 'none';
+      resetNoticiaForm();
+    };
+    
+    noticiaForm.onsubmit = function(e) {
+      e.preventDefault();
+      const id = noticiaIdInput.value;
+      const titulo = noticiaTituloInput.value;
+      const resumen = noticiaResumenInput.value;
+      const categoria = noticiaCategoriaInput.value;
+      let imagen = noticiaImagenTemporal;
+      
+      if (id) {
+        // Editar
+        const noticia = noticias.find(n => n.id == id);
+        noticia.titulo = titulo;
+        noticia.resumen = resumen;
+        noticia.categoria = categoria;
+        if (imagen) noticia.imagen = imagen;
+      } else {
+        // Añadir
+        noticias.push({ id: Date.now(), titulo, resumen, imagen, categoria });
+      }
+      renderNoticias();
+      noticiaFormContainer.style.display = 'none';
+      resetNoticiaForm();
+    };
+    
+    window.editarNoticia = function(id) {
+      const noticia = noticias.find(n => n.id == id);
+      noticiaIdInput.value = noticia.id;
+      noticiaTituloInput.value = noticia.titulo;
+      noticiaResumenInput.value = noticia.resumen;
+      noticiaCategoriaInput.value = noticia.categoria;
+      noticiaImagenTemporal = noticia.imagen || '';
+      noticiaImagenPreview.innerHTML = noticiaImagenTemporal ? `<img src="${noticiaImagenTemporal}" alt="Previsualización" style="max-width:120px;max-height:80px;">` : '';
+      noticiaImagenInput.value = '';
+      noticiaFormContainer.style.display = '';
+    };
+    
+    window.eliminarNoticia = function(id) {
+      if (confirm('¿Seguro que deseas eliminar esta noticia?')) {
+        noticias = noticias.filter(n => n.id != id);
+        renderNoticias();
+      }
+    };
+    
+    // --- Gestión de Banners ---
+    let banners = [
+      { id: 1, texto: 'Banner Izquierdo 1', posicion: 'izquierdo', duracion: 3 },
+      { id: 2, texto: 'Banner Izquierdo 2', posicion: 'izquierdo', duracion: 3 },
+      { id: 3, texto: 'Partner Linux', posicion: 'izquierdo', duracion: 3 },
+      { id: 4, texto: 'Banner Derecho 1', posicion: 'derecho', duracion: 3 },
+      { id: 5, texto: 'Banner Derecho 2', posicion: 'derecho', duracion: 3 },
+      { id: 6, texto: 'Partner OpenSource', posicion: 'derecho', duracion: 3 }
+    ];
+    
+    const bannersTbody = document.getElementById('banners-tbody');
+    const bannerFormContainer = document.getElementById('banner-form-container');
+    const bannerForm = document.getElementById('banner-form');
+    const addBannerBtn = document.getElementById('add-banner-btn');
+    const cancelarBannerBtn = document.getElementById('cancelar-banner');
+    const bannerIdInput = document.getElementById('banner-id');
+    const bannerTextoInput = document.getElementById('banner-texto');
+    const bannerPosicionInput = document.getElementById('banner-posicion');
+    const bannerDuracionInput = document.getElementById('banner-duracion');
+    
+    function renderBanners() {
+      bannersTbody.innerHTML = '';
+      
+      if (banners.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="4" style='padding:2rem; text-align:center; color:#666; background:#f9f9f9;'>
+            <div style='margin-bottom:1rem;'>🖼️</div>
+            <strong>No hay banners configurados</strong><br>
+            <span style='font-size:0.9rem;'>Añade banners para mostrar en diferentes posiciones de la página</span>
+          </td>
+        `;
+        bannersTbody.appendChild(tr);
+      } else {
+        banners.forEach(banner => {
+          const tr = document.createElement('tr');
+          const posicionColor = {
+            'izquierdo': '#e8f5e8',
+            'derecho': '#fff3e0',
+            'intermedio': '#f3e5f5',
+            'footer': '#e0f2f1'
+          };
+          tr.innerHTML = `
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><strong>${banner.texto}</strong></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><span style="background:${posicionColor[banner.posicion] || '#f5f5f5'}; padding:0.2rem 0.5rem; border-radius:3px; font-size:0.8rem;">${banner.posicion}</span></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><span style="background:#e3f2fd; padding:0.2rem 0.5rem; border-radius:3px; font-size:0.8rem;">${banner.duracion}s</span></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <button onclick="editarBanner(${banner.id})">Editar</button>
+              <button onclick="eliminarBanner(${banner.id})" style='margin-left:0.5rem;'>Eliminar</button>
+            </td>
+          `;
+          bannersTbody.appendChild(tr);
+        });
+      }
+      
+      localStorage.setItem('banners', JSON.stringify(banners));
+    }
+    
+    function resetBannerForm() {
+      bannerIdInput.value = '';
+      bannerTextoInput.value = '';
+      bannerPosicionInput.value = '';
+      bannerDuracionInput.value = '3';
+    }
+    
+    addBannerBtn.onclick = () => {
+      resetBannerForm();
+      bannerFormContainer.style.display = '';
+    };
+    
+    cancelarBannerBtn.onclick = () => {
+      bannerFormContainer.style.display = 'none';
+      resetBannerForm();
+    };
+    
+    bannerForm.onsubmit = function(e) {
+      e.preventDefault();
+      const id = bannerIdInput.value;
+      const texto = bannerTextoInput.value;
+      const posicion = bannerPosicionInput.value;
+      const duracion = bannerDuracionInput.value;
+      
+      if (id) {
+        // Editar
+        const banner = banners.find(b => b.id == id);
+        banner.texto = texto;
+        banner.posicion = posicion;
+        banner.duracion = duracion;
+      } else {
+        // Añadir
+        banners.push({ id: Date.now(), texto, posicion, duracion: parseInt(duracion) });
+      }
+      renderBanners();
+      bannerFormContainer.style.display = 'none';
+      resetBannerForm();
+    };
+    
+    window.editarBanner = function(id) {
+      const banner = banners.find(b => b.id == id);
+      bannerIdInput.value = banner.id;
+      bannerTextoInput.value = banner.texto;
+      bannerPosicionInput.value = banner.posicion;
+      bannerDuracionInput.value = banner.duracion;
+      bannerFormContainer.style.display = '';
+    };
+    
+    window.eliminarBanner = function(id) {
+      if (confirm('¿Seguro que deseas eliminar este banner?')) {
+        banners = banners.filter(b => b.id != id);
+        renderBanners();
+      }
+    };
+    
+    // --- Gestión de Categorías ---
+    let categorias = [
+      { id: 1, nombre: 'Actualidad', color: '#ff9800' },
+      { id: 2, nombre: 'Afiliados', color: '#2196f3' },
+
+      { id: 4, nombre: 'Hardware', color: '#9c27b0' },
+      { id: 5, nombre: 'Software', color: '#f44336' },
+      { id: 6, nombre: 'Comunidad', color: '#ff5722' }
+    ];
+    
+    const categoriasTbody = document.getElementById('categorias-tbody');
+    const categoriaFormContainer = document.getElementById('categoria-form-container');
+    const categoriaForm = document.getElementById('categoria-form');
+    const addCategoriaBtn = document.getElementById('add-categoria-btn');
+    const cancelarCategoriaBtn = document.getElementById('cancelar-categoria');
+    const categoriaIdInput = document.getElementById('categoria-id');
+    const categoriaNombreInput = document.getElementById('categoria-nombre');
+    const categoriaColorInput = document.getElementById('categoria-color');
+    
+    function renderCategorias() {
+      categoriasTbody.innerHTML = '';
+      
+      if (categorias.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="3" style='padding:2rem; text-align:center; color:#666; background:#f9f9f9;'>
+            <div style='margin-bottom:1rem;'>🏷️</div>
+            <strong>No hay categorías configuradas</strong><br>
+            <span style='font-size:0.9rem;'>Añade categorías para organizar las noticias</span>
+          </td>
+        `;
+        categoriasTbody.appendChild(tr);
+      } else {
+        categorias.forEach(categoria => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><strong>${categoria.nombre}</strong></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <div style='width:30px;height:20px;background:${categoria.color};border-radius:3px; border:1px solid #ddd;'></div>
+              <span style='margin-left:0.5rem; font-size:0.8rem; color:#666;'>${categoria.color}</span>
+            </td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <button onclick="editarCategoria(${categoria.id})">Editar</button>
+              <button onclick="eliminarCategoria(${categoria.id})" style='margin-left:0.5rem;'>Eliminar</button>
+            </td>
+          `;
+          categoriasTbody.appendChild(tr);
+        });
+      }
+      
+      localStorage.setItem('categorias', JSON.stringify(categorias));
+    }
+    
+    function resetCategoriaForm() {
+      categoriaIdInput.value = '';
+      categoriaNombreInput.value = '';
+      categoriaColorInput.value = '#ff9800';
+    }
+    
+    addCategoriaBtn.onclick = () => {
+      resetCategoriaForm();
+      categoriaFormContainer.style.display = '';
+    };
+    
+    cancelarCategoriaBtn.onclick = () => {
+      categoriaFormContainer.style.display = 'none';
+      resetCategoriaForm();
+    };
+    
+    categoriaForm.onsubmit = function(e) {
+      e.preventDefault();
+      const id = categoriaIdInput.value;
+      const nombre = categoriaNombreInput.value;
+      const color = categoriaColorInput.value;
+      
+      if (id) {
+        // Editar
+        const categoria = categorias.find(c => c.id == id);
+        categoria.nombre = nombre;
+        categoria.color = color;
+      } else {
+        // Añadir
+        categorias.push({ id: Date.now(), nombre, color });
+      }
+      renderCategorias();
+      categoriaFormContainer.style.display = 'none';
+      resetCategoriaForm();
+    };
+    
+    window.editarCategoria = function(id) {
+      const categoria = categorias.find(c => c.id == id);
+      categoriaIdInput.value = categoria.id;
+      categoriaNombreInput.value = categoria.nombre;
+      categoriaColorInput.value = categoria.color;
+      categoriaFormContainer.style.display = '';
+    };
+    
+    window.eliminarCategoria = function(id) {
+      if (confirm('¿Seguro que deseas eliminar esta categoría?')) {
+        categorias = categorias.filter(c => c.id != id);
+        renderCategorias();
+      }
+    };
+    
+    // --- Gestión del Footer ---
+    let footerItems = [
+      { id: 1, titulo: 'Sobre CodeaiNews', contenido: 'Tu portal de noticias sobre Linux, software libre y tecnología.', tipo: 'bio' },
+      { id: 2, titulo: 'Enlaces', contenido: 'Publicidad, Política de cookies, Información legal, Contacto, Acceso', tipo: 'links' },
+      { id: 3, titulo: 'Redes Sociales', contenido: 'Twitter, Facebook, YouTube', tipo: 'social' },
+      { id: 4, titulo: 'Últimas Noticias', contenido: 'Linux domina la nube en 2024, Nuevo hardware optimizado para Linux, La comunidad impulsa la innovación', tipo: 'ultimas' }
+    ];
+    
+    const footerTbody = document.getElementById('footer-tbody');
+    const footerFormContainer = document.getElementById('footer-form-container');
+    const footerForm = document.getElementById('footer-form');
+    const addFooterItemBtn = document.getElementById('add-footer-item-btn');
+    const cancelarFooterItemBtn = document.getElementById('cancelar-footer-item');
+    const footerItemIdInput = document.getElementById('footer-item-id');
+    const footerItemTituloInput = document.getElementById('footer-item-titulo');
+    const footerItemContenidoInput = document.getElementById('footer-item-contenido');
+    const footerItemTipoInput = document.getElementById('footer-item-tipo');
+    
+    function renderFooterItems() {
+      footerTbody.innerHTML = '';
+      
+      if (footerItems.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="3" style='padding:2rem; text-align:center; color:#666; background:#f9f9f9;'>
+            <div style='margin-bottom:1rem;'>📄</div>
+            <strong>No hay elementos del footer configurados</strong><br>
+            <span style='font-size:0.9rem;'>Añade elementos para personalizar el pie de página</span>
+          </td>
+        `;
+        footerTbody.appendChild(tr);
+      } else {
+        footerItems.forEach(item => {
+          const tr = document.createElement('tr');
+          const tipoColor = {
+            'bio': '#e8f5e8',
+            'links': '#e3f2fd',
+            'social': '#fff3e0',
+            'ultimas': '#f3e5f5'
+          };
+          tr.innerHTML = `
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><strong>${item.titulo}</strong><br><span style="font-size:0.8rem; color:#666;">${item.contenido.substring(0, 40)}...</span></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><span style="background:${tipoColor[item.tipo] || '#f5f5f5'}; padding:0.2rem 0.5rem; border-radius:3px; font-size:0.8rem;">${item.tipo}</span></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <button onclick="editarFooterItem(${item.id})">Editar</button>
+              <button onclick="eliminarFooterItem(${item.id})" style='margin-left:0.5rem;'>Eliminar</button>
+            </td>
+          `;
+          footerTbody.appendChild(tr);
+        });
+      }
+      
+      localStorage.setItem('footerItems', JSON.stringify(footerItems));
+    }
+    
+    function resetFooterItemForm() {
+      footerItemIdInput.value = '';
+      footerItemTituloInput.value = '';
+      footerItemContenidoInput.value = '';
+      footerItemTipoInput.value = '';
+    }
+    
+    addFooterItemBtn.onclick = () => {
+      resetFooterItemForm();
+      footerFormContainer.style.display = '';
+    };
+    
+    cancelarFooterItemBtn.onclick = () => {
+      footerFormContainer.style.display = 'none';
+      resetFooterItemForm();
+    };
+    
+    footerForm.onsubmit = function(e) {
+      e.preventDefault();
+      const id = footerItemIdInput.value;
+      const titulo = footerItemTituloInput.value;
+      const contenido = footerItemContenidoInput.value;
+      const tipo = footerItemTipoInput.value;
+      
+      if (id) {
+        // Editar
+        const item = footerItems.find(f => f.id == id);
+        item.titulo = titulo;
+        item.contenido = contenido;
+        item.tipo = tipo;
+      } else {
+        // Añadir
+        footerItems.push({ id: Date.now(), titulo, contenido, tipo });
+      }
+      renderFooterItems();
+      footerFormContainer.style.display = 'none';
+      resetFooterItemForm();
+    };
+    
+    window.editarFooterItem = function(id) {
+      const item = footerItems.find(f => f.id == id);
+      footerItemIdInput.value = item.id;
+      footerItemTituloInput.value = item.titulo;
+      footerItemContenidoInput.value = item.contenido;
+      footerItemTipoInput.value = item.tipo;
+      footerFormContainer.style.display = '';
+    };
+    
+    window.eliminarFooterItem = function(id) {
+      if (confirm('¿Seguro que deseas eliminar este elemento del footer?')) {
+        footerItems = footerItems.filter(f => f.id != id);
+        renderFooterItems();
+      }
+    };
+    
+    // --- Gestión del Blog ---
+    let blogPosts = [
+      {
+        id: 1,
+        titulo: "Guía Completa: Instalación de Ubuntu 24.04 LTS",
+        excerpt: "Aprende paso a paso cómo instalar Ubuntu 24.04 LTS en tu computadora. Incluye configuración de particiones, drivers y primeros pasos.",
+        contenido: "Contenido completo del post...",
+        imagen: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
+        categoria: "tutoriales",
+        autor: "Admin CodeaiNews",
+        fecha: "2024-01-15",
+        etiquetas: ["ubuntu", "instalacion", "linux", "tutorial", "beginners"],
+        vistas: 1250,
+        popularidad: 8.5,
+        estado: "publicado",
+        slug: "guia-instalacion-ubuntu-24-04-lts"
+      },
+      {
+        id: 2,
+        titulo: "Análisis: ¿Por qué Linux domina los servidores?",
+        excerpt: "Descubre las razones técnicas y económicas por las que Linux es la opción preferida para servidores empresariales y cloud computing.",
+        contenido: "Contenido completo del post...",
+        imagen: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80",
+        categoria: "analisis",
+        autor: "Admin CodeaiNews",
+        fecha: "2024-01-12",
+        etiquetas: ["servidores", "cloud", "empresas", "tecnologia", "linux"],
+        vistas: 890,
+        popularidad: 7.8,
+        estado: "publicado",
+        slug: "por-que-linux-domina-servidores"
+      },
+      {
+        id: 3,
+        titulo: "Review: Las mejores distribuciones Linux para 2024",
+        excerpt: "Evaluamos las distribuciones Linux más populares del momento, analizando pros, contras y casos de uso ideales para cada una.",
+        contenido: "Contenido completo del post...",
+        imagen: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80",
+        categoria: "reviews",
+        autor: "Admin CodeaiNews",
+        fecha: "2024-01-10",
+        etiquetas: ["distribuciones", "comparacion", "linux", "review", "2024"],
+        vistas: 2100,
+        popularidad: 9.2,
+        estado: "publicado",
+        slug: "mejores-distribuciones-linux-2024"
+      },
+      {
+        id: 4,
+        titulo: "Tutorial: Configuración de Docker en Ubuntu Server",
+        excerpt: "Aprende a instalar y configurar Docker en Ubuntu Server para desplegar aplicaciones de manera eficiente y escalable.",
+        contenido: "Contenido completo del post...",
+        imagen: "https://images.unsplash.com/photo-1605745341112-85968b19335b?auto=format&fit=crop&w=800&q=80",
+        categoria: "tutoriales",
+        autor: "Admin CodeaiNews",
+        fecha: "2024-01-08",
+        etiquetas: ["docker", "ubuntu", "servidor", "contenedores", "devops"],
+        vistas: 1560,
+        popularidad: 8.7,
+        estado: "publicado",
+        slug: "configuracion-docker-ubuntu-server"
+      },
+      {
+        id: 5,
+        titulo: "Afiliados: El futuro del software libre en la IA",
+        excerpt: "Reflexiones sobre cómo la inteligencia artificial está transformando el panorama del software libre y qué podemos esperar.",
+        contenido: "Contenido completo del post...",
+        imagen: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
+        categoria: "afiliados",
+        autor: "Admin CodeaiNews",
+        fecha: "2024-01-05",
+        etiquetas: ["inteligencia-artificial", "software-libre", "futuro", "tecnologia", "afiliados"],
+        vistas: 980,
+        popularidad: 7.5,
+        estado: "borrador",
+        slug: "futuro-software-libre-ia"
+      }
+    ];
+    
+    // Inicializar todas las tablas
+    renderNoticias();
+    renderBanners();
+    renderCategorias();
+    renderBlogPosts();
+    renderContacto();
+    renderFooterItems();
+    
+    // Cargar datos guardados si existen
+    try {
+      const noticiasGuardadas = JSON.parse(localStorage.getItem('noticias'));
+      if (noticiasGuardadas) noticias = noticiasGuardadas;
+      
+      const bannersGuardados = JSON.parse(localStorage.getItem('banners'));
+      if (bannersGuardados) banners = bannersGuardados;
+      
+      const categoriasGuardadas = JSON.parse(localStorage.getItem('categorias'));
+      if (categoriasGuardadas) categorias = categoriasGuardadas;
+      
+      const footerItemsGuardados = JSON.parse(localStorage.getItem('footerItems'));
+      if (footerItemsGuardados) footerItems = footerItemsGuardados;
+      
+      // Verificar si blogPosts ya existe en localStorage, si no, guardarlo
+      const blogPostsGuardados = JSON.parse(localStorage.getItem('blogPosts'));
+      if (!blogPostsGuardados || blogPostsGuardados.length === 0) {
+        localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+        console.log('Entradas de ejemplo del blog guardadas en localStorage');
+      } else {
+        blogPosts = blogPostsGuardados;
+      }
+      
+      // Re-renderizar con datos guardados
+      renderNoticias();
+      renderBanners();
+      renderCategorias();
+      renderBlogPosts();
+      renderContacto();
+      renderFooterItems();
+    } catch (e) {
+      console.log('No hay datos guardados o error al cargar');
+    }
+    
+    // --- Gestión del Blog ---
+    
+    function renderBlogPosts() {
+      // Cargar posts guardados
+      try {
+        const postsGuardados = JSON.parse(localStorage.getItem('blogPosts'));
+        if (postsGuardados && postsGuardados.length > 0) {
+          blogPosts = postsGuardados;
+        }
+      } catch (e) {
+        console.log('No hay posts guardados, usando datos de ejemplo');
+      }
+      
+      const blogPostsTbody = document.getElementById('blog-posts-tbody');
+      
+      if (blogPosts.length === 0) {
+        blogPostsTbody.innerHTML = `
+          <tr>
+            <td colspan="6" style='padding:2rem; text-align:center; color:#666; background:#f9f9f9;'>
+              <div style='margin-bottom:1rem;'>📝</div>
+              <strong>No hay entradas en el blog</strong><br>
+              <span style='font-size:0.9rem;'>Crea la primera entrada para comenzar</span>
+            </td>
+          </tr>
+        `;
+      } else {
+        blogPostsTbody.innerHTML = blogPosts.map(post => `
+          <tr>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              ${post.imagen ? `<img src='${post.imagen}' alt='img' style='max-width:60px;max-height:40px;border-radius:4px;'>` : '<span style="color:#999;">Sin imagen</span>'}
+            </td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <strong>${post.titulo}</strong><br>
+              <small style="color:#666;">${post.excerpt.substring(0, 50)}...</small>
+            </td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <span style="background:#e3f2fd; padding:0.2rem 0.5rem; border-radius:3px; font-size:0.8rem;">${post.categoria}</span>
+            </td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <span style="background:${post.estado === 'publicado' ? '#e8f5e8' : post.estado === 'borrador' ? '#fff3e0' : '#f3e5f5'}; padding:0.2rem 0.5rem; border-radius:3px; font-size:0.8rem;">${post.estado}</span>
+            </td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <div style="display:flex;flex-wrap:wrap;gap:0.2rem;">
+                ${post.etiquetas.slice(0, 3).map(tag => `<span style="background:#f0f0f0; padding:0.1rem 0.3rem; border-radius:2px; font-size:0.7rem;">${tag}</span>`).join('')}
+                ${post.etiquetas.length > 3 ? `<span style="color:#666; font-size:0.7rem;">+${post.etiquetas.length - 3} más</span>` : ''}
+              </div>
+            </td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <button onclick="editarBlogPost(${post.id})">✏️ Editar</button>
+              <button onclick="eliminarBlogPost(${post.id})" style='margin-left:0.5rem;'>🗑️ Eliminar</button>
+              <button onclick="verBlogPost(${post.id})" style='margin-left:0.5rem;'>👁️ Ver</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      
+      // Event listeners
+      document.getElementById('add-blog-post-btn').onclick = () => {
+        resetBlogPostForm();
+        document.getElementById('blog-post-form-container').style.display = '';
+        document.getElementById('blog-fecha').value = new Date().toISOString().split('T')[0];
+      };
+      
+      document.getElementById('cancelar-blog-post').onclick = () => {
+        document.getElementById('blog-post-form-container').style.display = 'none';
+        resetBlogPostForm();
+      };
+      
+      document.getElementById('refresh-blog-btn').onclick = () => {
+        renderBlogPosts();
+      };
+      
+      // Manejo de imagen
+      document.getElementById('blog-imagen').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            document.getElementById('blog-imagen-preview').innerHTML = `<img src='${evt.target.result}' style='max-width:200px;max-height:150px;border-radius:4px;'>`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      // Formulario del blog
+      document.getElementById('blog-post-form').onsubmit = function(e) {
+        e.preventDefault();
+        
+        const titulo = document.getElementById('blog-titulo').value;
+        const categoria = document.getElementById('blog-categoria').value;
+        const autor = document.getElementById('blog-autor').value;
+        const fecha = document.getElementById('blog-fecha').value;
+        const excerpt = document.getElementById('blog-excerpt').value;
+        const contenido = document.getElementById('blog-contenido').value;
+        const etiquetas = document.getElementById('blog-etiquetas').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+        const slug = document.getElementById('blog-slug').value || generarSlug(titulo);
+        const estado = document.getElementById('blog-estado').value;
+        
+        // Obtener imagen
+        const imagenPreview = document.getElementById('blog-imagen-preview');
+        const imagen = imagenPreview.querySelector('img') ? imagenPreview.querySelector('img').src : '';
+        
+        const postData = {
+          id: document.getElementById('blog-post-form').getAttribute('data-edit-id') || Date.now(),
+          titulo,
+          categoria,
+          autor,
+          fecha,
+          excerpt,
+          contenido,
+          etiquetas,
+          slug,
+          estado,
+          imagen,
+          vistas: 0,
+          popularidad: 0
+        };
+        
+        if (document.getElementById('blog-post-form').getAttribute('data-edit-id')) {
+          // Editar post existente
+          const index = blogPosts.findIndex(p => p.id == postData.id);
+          if (index !== -1) {
+            blogPosts[index] = { ...blogPosts[index], ...postData };
+          }
+        } else {
+          // Crear nuevo post
+          blogPosts.push(postData);
+        }
+        
+        localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+        renderBlogPosts();
+        document.getElementById('blog-post-form-container').style.display = 'none';
+        resetBlogPostForm();
+        alert('Entrada del blog guardada correctamente');
+      };
+    }
+    
+    function resetBlogPostForm() {
+      document.getElementById('blog-post-form').reset();
+      document.getElementById('blog-post-form').removeAttribute('data-edit-id');
+      document.getElementById('blog-imagen-preview').innerHTML = '';
+      document.getElementById('blog-autor').value = 'Admin CodeaiNews';
+      document.getElementById('blog-fecha').value = new Date().toISOString().split('T')[0];
+    }
+    
+    function generarSlug(titulo) {
+      return titulo
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, '-')
+        .trim();
+    }
+    
+    window.editarBlogPost = function(id) {
+      const post = blogPosts.find(p => p.id == id);
+      if (post) {
+        document.getElementById('blog-post-form').setAttribute('data-edit-id', post.id);
+        document.getElementById('blog-titulo').value = post.titulo;
+        document.getElementById('blog-categoria').value = post.categoria;
+        document.getElementById('blog-autor').value = post.autor;
+        document.getElementById('blog-fecha').value = post.fecha;
+        document.getElementById('blog-excerpt').value = post.excerpt;
+        document.getElementById('blog-contenido').value = post.contenido;
+        document.getElementById('blog-etiquetas').value = post.etiquetas.join(', ');
+        document.getElementById('blog-slug').value = post.slug;
+        document.getElementById('blog-estado').value = post.estado;
+        
+        if (post.imagen) {
+          document.getElementById('blog-imagen-preview').innerHTML = `<img src='${post.imagen}' style='max-width:200px;max-height:150px;border-radius:4px;'>`;
+        }
+        
+        document.getElementById('blog-post-form-container').style.display = '';
+      }
+    };
+    
+    window.eliminarBlogPost = function(id) {
+      if (confirm('¿Seguro que deseas eliminar esta entrada del blog?')) {
+        blogPosts = blogPosts.filter(p => p.id != id);
+        localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+        renderBlogPosts();
+      }
+    };
+    
+    window.verBlogPost = function(id) {
+      const post = blogPosts.find(p => p.id == id);
+      if (post) {
+        alert(`Post: ${post.titulo}\n\nCategoría: ${post.categoria}\nEstado: ${post.estado}\nEtiquetas: ${post.etiquetas.join(', ')}\n\nContenido:\n${post.contenido}`);
+      }
+    };
+    
+    // --- Gestión de Contacto ---
+    function renderContacto() {
+      // Cargar información de contacto guardada
+      try {
+        const infoContacto = JSON.parse(localStorage.getItem('infoContacto'));
+        if (infoContacto) {
+          if (infoContacto.direccion) document.getElementById('contacto-direccion').value = infoContacto.direccion;
+          if (infoContacto.email) document.getElementById('contacto-email').value = infoContacto.email;
+          if (infoContacto.telefono) document.getElementById('contacto-telefono').value = infoContacto.telefono;
+          if (infoContacto.horario) document.getElementById('contacto-horario').value = infoContacto.horario;
+        }
+      } catch (e) {
+        console.log('No hay información de contacto personalizada');
+      }
+      
+      // Renderizar mensajes de contacto
+      renderMensajesContacto();
+      
+      // Event listeners
+      document.getElementById('edit-info-contacto-btn').onclick = () => {
+        document.getElementById('info-contacto-form-container').style.display = '';
+      };
+      
+      document.getElementById('cancelar-info-contacto').onclick = () => {
+        document.getElementById('info-contacto-form-container').style.display = 'none';
+      };
+      
+      document.getElementById('refresh-contactos-btn').onclick = () => {
+        renderMensajesContacto();
+      };
+      
+      document.getElementById('info-contacto-form').onsubmit = function(e) {
+        e.preventDefault();
+        const infoContacto = {
+          direccion: document.getElementById('contacto-direccion').value,
+          email: document.getElementById('contacto-email').value,
+          telefono: document.getElementById('contacto-telefono').value,
+          horario: document.getElementById('contacto-horario').value
+        };
+        localStorage.setItem('infoContacto', JSON.stringify(infoContacto));
+        alert('Información de contacto actualizada correctamente');
+        document.getElementById('info-contacto-form-container').style.display = 'none';
+      };
+    }
+    
+    function renderMensajesContacto() {
+      const contactosTbody = document.getElementById('contactos-tbody');
+      let contactos = [];
+      
+      try {
+        contactos = JSON.parse(localStorage.getItem('contactos')) || [];
+      } catch (e) {
+        contactos = [];
+      }
+      
+      contactosTbody.innerHTML = '';
+      
+      if (contactos.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="5" style='padding:2rem; text-align:center; color:#666; background:#f9f9f9;'>
+            <div style='margin-bottom:1rem;'>✉️</div>
+            <strong>No hay mensajes de contacto</strong><br>
+            <span style='font-size:0.9rem;'>Los mensajes enviados desde la página de contacto aparecerán aquí</span>
+          </td>
+        `;
+        contactosTbody.appendChild(tr);
+      } else {
+        contactos.forEach(contacto => {
+          const tr = document.createElement('tr');
+          const estadoColor = {
+            'nuevo': '#e3f2fd',
+            'leido': '#e8f5e8',
+            'respondido': '#fff3e0',
+            'archivado': '#f5f5f5'
+          };
+          tr.innerHTML = `
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><small>${contacto.fecha}</small></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'><strong>${contacto.nombre}</strong><br><small>${contacto.email}</small></td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>${contacto.asunto}</td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <span style="background:${estadoColor[contacto.estado] || '#f5f5f5'}; padding:0.2rem 0.5rem; border-radius:3px; font-size:0.8rem;">${contacto.estado}</span>
+            </td>
+            <td style='padding:0.5rem; border:1px solid #cfd8dc;'>
+              <button onclick="verMensajeContacto(${contacto.id})">Ver</button>
+              <button onclick="cambiarEstadoContacto(${contacto.id})" style='margin-left:0.5rem;'>Estado</button>
+              <button onclick="eliminarMensajeContacto(${contacto.id})" style='margin-left:0.5rem;'>Eliminar</button>
+            </td>
+          `;
+          contactosTbody.appendChild(tr);
+        });
+      }
+    }
+    
+    window.verMensajeContacto = function(id) {
+      let contactos = [];
+      try {
+        contactos = JSON.parse(localStorage.getItem('contactos')) || [];
+      } catch (e) {
+        contactos = [];
+      }
+      
+      const contacto = contactos.find(c => c.id == id);
+      if (contacto) {
+        alert(`Mensaje de ${contacto.nombre} (${contacto.email})\n\nAsunto: ${contacto.asunto}\n\nMensaje:\n${contacto.mensaje}`);
+        
+        // Marcar como leído si es nuevo
+        if (contacto.estado === 'nuevo') {
+          contacto.estado = 'leido';
+          localStorage.setItem('contactos', JSON.stringify(contactos));
+          renderMensajesContacto();
+        }
+      }
+    };
+    
+    window.cambiarEstadoContacto = function(id) {
+      let contactos = [];
+      try {
+        contactos = JSON.parse(localStorage.getItem('contactos')) || [];
+      } catch (e) {
+        contactos = [];
+      }
+      
+      const contacto = contactos.find(c => c.id == id);
+      if (contacto) {
+        const estados = ['nuevo', 'leido', 'respondido', 'archivado'];
+        const estadoActual = estados.indexOf(contacto.estado);
+        const nuevoEstado = estados[(estadoActual + 1) % estados.length];
+        
+        contacto.estado = nuevoEstado;
+        localStorage.setItem('contactos', JSON.stringify(contactos));
+        renderMensajesContacto();
+      }
+    };
+    
+    window.eliminarMensajeContacto = function(id) {
+      if (confirm('¿Seguro que deseas eliminar este mensaje de contacto?')) {
+        let contactos = [];
+        try {
+          contactos = JSON.parse(localStorage.getItem('contactos')) || [];
+        } catch (e) {
+          contactos = [];
+        }
+        
+        contactos = contactos.filter(c => c.id != id);
+        localStorage.setItem('contactos', JSON.stringify(contactos));
+        renderMensajesContacto();
+      }
+    };
+  </script>
+</body>
+</html> 

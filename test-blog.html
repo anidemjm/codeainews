@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Blog - CodeaiNews</title>
+</head>
+<body>
+  <h1>Test del Blog</h1>
+  
+  <div style="margin: 2rem 0;">
+    <h3>Estado del localStorage:</h3>
+    <div id="localStorage-status"></div>
+  </div>
+  
+  <div style="margin: 2rem 0;">
+    <h3>Entradas del Blog:</h3>
+    <div id="blog-entries"></div>
+  </div>
+  
+  <div style="margin: 2rem 0;">
+    <h3>Acciones:</h3>
+    <button onclick="cargarEntradasEjemplo()">Cargar Entradas de Ejemplo</button>
+    <button onclick="limpiarLocalStorage()">Limpiar localStorage</button>
+    <button onclick="verificarEstado()">Verificar Estado</button>
+  </div>
+
+  <script>
+    // Verificar estado inicial
+    function verificarEstado() {
+      const statusDiv = document.getElementById('localStorage-status');
+      const blogEntriesDiv = document.getElementById('blog-entries');
+      
+      try {
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+        
+        statusDiv.innerHTML = `
+          <p><strong>Estado:</strong> ${blogPosts.length > 0 ? '✅ Hay entradas' : '❌ No hay entradas'}</p>
+          <p><strong>Cantidad:</strong> ${blogPosts.length}</p>
+          <p><strong>localStorage disponible:</strong> ${typeof(Storage) !== "undefined" ? '✅ Sí' : '❌ No'}</p>
+        `;
+        
+        if (blogPosts.length > 0) {
+          blogEntriesDiv.innerHTML = `
+            <div style="background: #e8f5e8; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+              <h4>Entradas encontradas:</h4>
+              <ul>
+                ${blogPosts.map(post => `
+                  <li>
+                    <strong>${post.titulo}</strong> - 
+                    <span style="background: ${post.estado === 'publicado' ? '#e8f5e8' : '#fff3e0'}; padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.8rem;">
+                      ${post.estado}
+                    </span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          `;
+        } else {
+          blogEntriesDiv.innerHTML = `
+            <div style="background: #fff3cd; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+              <p>No hay entradas en el blog. Haz clic en "Cargar Entradas de Ejemplo" para crear algunas.</p>
+            </div>
+          `;
+        }
+        
+      } catch (error) {
+        statusDiv.innerHTML = `
+          <p style="color: red;"><strong>Error:</strong> ${error.message}</p>
+        `;
+      }
+    }
+    
+    // Cargar entradas de ejemplo
+    function cargarEntradasEjemplo() {
+      const blogPosts = [
+        {
+          id: 1,
+          titulo: "Guía Completa: Instalación de Ubuntu 24.04 LTS",
+          excerpt: "Aprende paso a paso cómo instalar Ubuntu 24.04 LTS en tu computadora.",
+          contenido: "Contenido completo del post...",
+          imagen: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
+          categoria: "tutoriales",
+          autor: "Admin CodeaiNews",
+          fecha: "2024-01-15",
+          etiquetas: ["ubuntu", "instalacion", "linux", "tutorial"],
+          vistas: 1250,
+          estado: "publicado",
+          slug: "guia-instalacion-ubuntu-24-04-lts"
+        },
+        {
+          id: 2,
+          titulo: "Análisis: ¿Por qué Linux domina los servidores?",
+          excerpt: "Descubre las razones técnicas y económicas por las que Linux es la opción preferida.",
+          contenido: "Contenido completo del post...",
+          imagen: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80",
+          categoria: "analisis",
+          autor: "Admin CodeaiNews",
+          fecha: "2024-01-12",
+          etiquetas: ["servidores", "cloud", "empresas", "linux"],
+          vistas: 890,
+          estado: "publicado",
+          slug: "por-que-linux-domina-servidores"
+        }
+      ];
+      
+      try {
+        localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+        alert(`✅ Se han cargado ${blogPosts.length} entradas de ejemplo en localStorage`);
+        verificarEstado();
+      } catch (error) {
+        alert(`❌ Error al guardar: ${error.message}`);
+      }
+    }
+    
+    // Limpiar localStorage
+    function limpiarLocalStorage() {
+      if (confirm('¿Estás seguro de que quieres limpiar todas las entradas del blog?')) {
+        localStorage.removeItem('blogPosts');
+        alert('✅ localStorage limpiado');
+        verificarEstado();
+      }
+    }
+    
+    // Verificar estado al cargar la página
+    document.addEventListener('DOMContentLoaded', verificarEstado);
+  </script>
+</body>
+</html>
+

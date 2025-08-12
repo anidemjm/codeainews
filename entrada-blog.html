@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrada del Blog - CodeaiNews</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">CodeaiNews</div>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#">Actualidad</a>
+        <a href="#">Afiliados</a>
+        <a href="contacto.html">Contacto</a>
+        <a href="blog.html">Blog</a>
+      </nav>
+      <form class="search-bar">
+        <input type="text" placeholder="Buscar...">
+        <button type="submit">🔍</button>
+      </form>
+    </div>
+  </header>
+
+  <main style="max-width: 900px; margin: 2rem auto; padding: 0 2rem;">
+    <div id="entrada-content">
+      <div style="text-align: center; padding: 3rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+        <h3>Cargando entrada...</h3>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin: 2rem 0;">
+      <a href="blog.html" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #1a237e; color: #fff; text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 25px; font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='#ff9800'">
+        ← Volver al Blog
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-bio">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Tux" style="height:40px;vertical-align:middle;margin-right:10px;">
+        <span><b>CodeaiNews</b> es tu portal de noticias sobre Linux, software libre y tecnología.</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Sobre CodeaiNews</a>
+        <a href="#">Publicidad</a>
+        <a href="#">Política de cookies</a>
+        <a href="#">Información legal</a>
+        <a href="contacto.html">Contacto</a>
+        <a href="login.html">Acceso</a>
+      </div>
+      <div class="footer-info">&copy; 2024 CodeaiNews. Todos los derechos reservados.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Obtener el ID de la entrada desde la URL
+    function obtenerIdEntrada() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
+    }
+    
+    // Cargar entrada individual del blog
+    function cargarEntrada() {
+      const entradaContent = document.getElementById('entrada-content');
+      const postId = obtenerIdEntrada();
+      
+      if (!postId) {
+        entradaContent.innerHTML = `
+          <div style="text-align: center; padding: 3rem; background: #f9f9fb; border-radius: 12px;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+            <h3>Entrada no encontrada</h3>
+            <p style="color: #666;">No se especificó qué entrada mostrar.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      try {
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+        const post = blogPosts.find(p => p.id == postId);
+        
+        if (!post) {
+          entradaContent.innerHTML = `
+            <div style="text-align: center; padding: 3rem; background: #f9f9fb; border-radius: 12px;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+              <h3>Entrada no encontrada</h3>
+              <p style="color: #666;">La entrada solicitada no existe o ha sido eliminada.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Actualizar el título de la página
+        document.title = `${post.titulo} - CodeaiNews`;
+        
+        // Mostrar la entrada completa
+        entradaContent.innerHTML = `
+          <article style="background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #f0f0f0;">
+            <!-- Imagen destacada -->
+            <div style="position: relative;">
+              <img src="${post.imagen || 'https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg'}" alt="${post.titulo}" style="width: 100%; height: 400px; object-fit: cover;">
+              <div style="position: absolute; top: 1rem; right: 1rem; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 0.5rem 1.2rem; border-radius: 25px; font-size: 0.9rem; font-weight: 600; text-transform: capitalize; box-shadow: 0 2px 8px rgba(255,152,0,0.3);">
+                ${post.categoria}
+              </div>
+            </div>
+            
+            <!-- Contenido de la entrada -->
+            <div style="padding: 2.5rem;">
+              <!-- Título -->
+              <h1 style="margin: 0 0 1.5rem 0; color: #1a237e; font-size: 2.2rem; line-height: 1.2; font-weight: 700;">
+                ${post.titulo}
+              </h1>
+              
+              <!-- Meta información -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 12px; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                  <span style="color: #666; font-size: 1rem;">
+                    <strong style="color: #1a237e;">👤 ${post.autor}</strong>
+                  </span>
+                  <span style="color: #666; font-size: 1rem;">
+                    📅 ${new Date(post.fecha).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </span>
+                  <span style="color: #666; font-size: 1rem; background: #e3f2fd; padding: 0.4rem 0.8rem; border-radius: 15px;">
+                    👁️ ${post.vistas || 0} vistas
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Etiquetas -->
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;">
+                ${post.etiquetas.map(tag => `
+                  <span style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); color: #1976d2; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; border: 1px solid #e1f5fe;">
+                    #${tag}
+                  </span>
+                `).join('')}
+              </div>
+              
+              <!-- Contenido principal -->
+              <div style="line-height: 1.8; color: #333; font-size: 1.1rem;">
+                ${post.contenido || post.excerpt}
+              </div>
+              
+              <!-- Botones de acción -->
+              <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                <button onclick="compartirEntrada()" style="background: linear-gradient(135deg, #1da1f2, #0d8bd9); color: #fff; border: none; padding: 0.8rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                  🐦 Compartir en Twitter
+                </button>
+                <button onclick="compartirFacebook()" style="background: linear-gradient(135deg, #1877f3, #0d6efd); color: #fff; border: none; padding: 0.8rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                  📘 Compartir en Facebook
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+        
+        // Incrementar vistas
+        incrementarVistas(postId);
+        
+      } catch (error) {
+        console.error('Error al cargar la entrada:', error);
+        entradaContent.innerHTML = `
+          <div style="text-align: center; padding: 3rem; background: #f9f9fb; border-radius: 12px;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+            <h3>Error al cargar la entrada</h3>
+            <p style="color: #666;">Hubo un problema al cargar el contenido. Intenta recargar la página.</p>
+          </div>
+        `;
+      }
+    }
+    
+    // Incrementar contador de vistas
+    function incrementarVistas(postId) {
+      try {
+        const blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+        const postIndex = blogPosts.findIndex(p => p.id == postId);
+        
+        if (postIndex !== -1) {
+          blogPosts[postIndex].vistas = (blogPosts[postIndex].vistas || 0) + 1;
+          localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+        }
+      } catch (error) {
+        console.error('Error al incrementar vistas:', error);
+      }
+    }
+    
+    // Funciones de compartir
+    function compartirEntrada() {
+      const url = window.location.href;
+      const titulo = document.title.replace(' - CodeaiNews', '');
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(titulo)}&url=${encodeURIComponent(url)}`;
+      window.open(twitterUrl, '_blank');
+    }
+    
+    function compartirFacebook() {
+      const url = window.location.href;
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      window.open(facebookUrl, '_blank');
+    }
+    
+    // Cargar entrada al cargar la página
+    document.addEventListener('DOMContentLoaded', cargarEntrada);
+  </script>
+</body>
+</html>
