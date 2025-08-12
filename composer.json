@@ -1,33 +1,15 @@
 {
     "name": "codeainews/website",
-    "description": "Sitio web de noticias tecnológicas CodeaiNews",
+    "description": "Sitio web de noticias tecnologicas CodeaiNews",
     "type": "project",
     "require": {
-        "php": "^8.0",
-        "ext-pdo": "*",
-        "ext-pdo_pgsql": "*",
-        "ext-json": "*",
-        "ext-mbstring": "*"
+        "php": "^8.0"
     },
     "require-dev": {
         "heroku/heroku-buildpack-php": "*"
     },
-    "scripts": {
-        "post-install-cmd": [
-            "php -r \"if (file_exists('config/database-heroku.php')) { require_once 'config/database-heroku.php'; \$db = new Database(); \$db->createTables(); \$db->insertInitialData(); echo 'Base de datos configurada exitosamente'; }\""
-        ]
-    },
     "config": {
-        "optimize-autoloader": true,
-        "sort-packages": true
+        "optimize-autoloader": true
     },
-    "autoload": {
-        "psr-4": {
-            "CodeaiNews\\": "src/"
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "minimum-stability": "stable"
 }
-
-
