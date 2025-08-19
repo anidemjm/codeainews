@@ -1,4 +1,13 @@
+# Configuración específica para Heroku
+DirectoryIndex index.php index.html
+
+# Habilitar mod_rewrite
 RewriteEngine On
+
+# Servir index.php como página principal
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^$ index.php [L]
 
 # Redirigir archivos HTML a PHP
 RewriteCond %{REQUEST_FILENAME} !-f
