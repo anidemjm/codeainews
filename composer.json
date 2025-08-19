@@ -1,6 +1,6 @@
 {
     "name": "codeainews/website",
-    "description": "Sitio web de noticias tecnologicas CodeaiNews",
+    "description": "Sitio web de noticias tecnologicas CodeaiNews - Updated for Heroku",
     "type": "project",
     "require": {
         "php": "^8.0"
