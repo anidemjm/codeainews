@@ -28,8 +28,9 @@ function verificarConfiguracionHeroku() {
         $errores[] = "DATABASE_URL no está configurada";
     }
     
+    // HEROKU_APP_NAME es opcional, no crítico
     if (empty($_ENV['HEROKU_APP_NAME'])) {
-        $errores[] = "HEROKU_APP_NAME no está configurada";
+        echo "⚠️ HEROKU_APP_NAME no está configurada (opcional)<br>";
     }
     
     return [empty($errores), $errores];
