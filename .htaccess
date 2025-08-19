@@ -1,5 +1,5 @@
 # Configuración del directorio por defecto
-DirectoryIndex index.php index.html
+DirectoryIndex index.html index.php
 
 RewriteEngine On
 
