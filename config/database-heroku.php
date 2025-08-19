@@ -4,40 +4,37 @@
  * Esta versión usa PostgreSQL en lugar de MySQL
  */
 
-require_once 'heroku.php';
-
 class Database {
-    private $host = DB_HOST;
-    private $db_name = DB_NAME;
-    private $username = DB_USER;
-    private $password = DB_PASS;
-    private $port = DB_PORT;
     private $conn;
 
     public function getConnection() {
         $this->conn = null;
 
         try {
-            $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name;
+            // Obtener DATABASE_URL de Heroku
+            $database_url = getenv('DATABASE_URL');
             
-            $this->conn = new PDO(
-                $dsn,
-                $this->username,
-                $this->password,
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                    PDO::ATTR_PERSISTENT => false
-                ]
-            );
+            if (!$database_url) {
+                throw new Exception("DATABASE_URL no está configurada en Heroku");
+            }
+            
+            // Crear conexión PDO directamente desde DATABASE_URL
+            $this->conn = new PDO($database_url, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_PERSISTENT => false
+            ]);
             
             // Configurar timezone
             $this->conn->exec("SET timezone = 'UTC'");
             
         } catch(PDOException $exception) {
             error_log("Error de conexión PostgreSQL: " . $exception->getMessage());
-            throw new Exception("No se pudo conectar a la base de datos PostgreSQL");
+            throw new Exception("No se pudo conectar a la base de datos PostgreSQL: " . $exception->getMessage());
+        } catch(Exception $exception) {
+            error_log("Error general: " . $exception->getMessage());
+            throw $exception;
         }
 
         return $this->conn;
@@ -75,9 +72,7 @@ class Database {
             
             return [
                 'version' => $version['version'],
-                'name' => $name['name'],
-                'host' => $this->host,
-                'port' => $this->port
+                'name' => $name['name']
             ];
         } catch (Exception $e) {
             return null;
