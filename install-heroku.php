@@ -61,7 +61,7 @@ function crearConexionPostgreSQL() {
 // Crear tablas en PostgreSQL
 function crearTablasPostgreSQL($conn) {
     $tables = [
-        'usuarios' => "CREATE TABLE IF NOT EXISTS usuarios (
+        'usuarios' => "DROP TABLE IF EXISTS usuarios CASCADE; CREATE TABLE usuarios (
             id SERIAL PRIMARY KEY,
             usuario VARCHAR(50) UNIQUE NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
