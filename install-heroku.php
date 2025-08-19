@@ -64,7 +64,7 @@ function crearTablasPostgreSQL($conn) {
         'usuarios' => "CREATE TABLE IF NOT EXISTS usuarios (
             id SERIAL PRIMARY KEY,
             usuario VARCHAR(50) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
             email VARCHAR(100),
             fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )",
@@ -162,7 +162,7 @@ function insertarDatosIniciales($conn) {
     try {
         // Usuario administrador
         $adminPassword = password_hash('admin1', PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO usuarios (usuario, password, email) VALUES (?, ?, ?) ON CONFLICT (usuario) DO NOTHING");
+        $stmt = $conn->prepare("INSERT INTO usuarios (usuario, password_hash, email) VALUES (?, ?, ?) ON CONFLICT (usuario) DO NOTHING");
         $stmt->execute(['admin1', $adminPassword, ADMIN_EMAIL]);
         echo "✅ Usuario administrador creado (admin1/admin1)<br>";
         
