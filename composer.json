@@ -1,9 +1,12 @@
 {
     "name": "codeainews/website",
-    "description": "Sitio web de noticias tecnologicas CodeaiNews - Updated for Heroku",
+    "description": "Sitio web de noticias tecnologicas CodeaiNews - Updated for Heroku v14",
     "type": "project",
     "require": {
-        "php": "^8.0"
+        "php": "^8.0",
+        "ext-pdo": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-pgsql": "*"
     },
     "require-dev": {
         "heroku/heroku-buildpack-php": "*"
