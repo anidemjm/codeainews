@@ -18,8 +18,28 @@ class Database {
                 throw new Exception("DATABASE_URL no está configurada en Heroku");
             }
             
-            // Crear conexión PDO directamente desde DATABASE_URL
-            $this->conn = new PDO($database_url);
+            // Parsear la DATABASE_URL para extraer componentes
+            $url_parts = parse_url($database_url);
+            
+            if (!$url_parts) {
+                throw new Exception("DATABASE_URL no es válida");
+            }
+            
+            // Construir DSN específico para PostgreSQL
+            $dsn = "pgsql:host=" . $url_parts['host'];
+            if (isset($url_parts['port'])) {
+                $dsn .= ";port=" . $url_parts['port'];
+            }
+            if (isset($url_parts['path'])) {
+                $dsn .= ";dbname=" . ltrim($url_parts['path'], '/');
+            }
+            
+            // Crear conexión PDO con credenciales explícitas
+            $this->conn = new PDO(
+                $dsn,
+                $url_parts['user'] ?? '',
+                $url_parts['pass'] ?? ''
+            );
             
             // Configurar atributos después de la conexión
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
