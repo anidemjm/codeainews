@@ -52,3 +52,5 @@ define('METRICS_INTERVAL', $_ENV['METRICS_INTERVAL'] ?? 300); // 5 minutos
 ?>
 
 
+
+
