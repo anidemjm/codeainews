@@ -1,3 +1,6 @@
+# Configuración del directorio por defecto
+DirectoryIndex index.php index.html
+
 RewriteEngine On
 
 # Redirigir archivos HTML a PHP
