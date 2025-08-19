@@ -2,6 +2,7 @@
 /**
  * Configuración de Base de Datos para CodeaiNews
  * Detecta automáticamente si está en Heroku o local
+ * Updated: Heroku deployment v7
  */
 
 // Detectar si estamos en Heroku
