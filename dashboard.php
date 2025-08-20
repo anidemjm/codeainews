@@ -8,6 +8,7 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 require_once 'config/database.php';
+require_once 'config/api-endpoints.php';
 
 // Obtener datos de la base de datos
 try {

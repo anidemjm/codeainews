@@ -1,7 +1,7 @@
 <?php
 /**
- * Script de instalación para Heroku
- * Ejecutar UNA SOLA VEZ después del despliegue
+ * Script para insertar datos de ejemplo en tablas existentes
+ * Útil cuando las tablas ya están creadas pero están vacías
  */
 
 // Incluir configuración de Heroku
@@ -17,23 +17,6 @@ function mostrarEstado($titulo, $estado, $mensaje = '') {
     echo $estado ? 'OK' : 'ERROR';
     if ($mensaje) echo " - $mensaje";
     echo "</div>";
-}
-
-// Verificar configuración de Heroku
-function verificarConfiguracionHeroku() {
-    $errores = [];
-    
-    // Verificar variables de entorno
-    if (empty($_ENV['DATABASE_URL'])) {
-        $errores[] = "DATABASE_URL no está configurada";
-    }
-    
-    // HEROKU_APP_NAME es opcional, no crítico
-    if (empty($_ENV['HEROKU_APP_NAME'])) {
-        echo "⚠️ HEROKU_APP_NAME no está configurada (opcional)<br>";
-    }
-    
-    return [empty($errores), $errores];
 }
 
 // Crear conexión a la base de datos PostgreSQL
@@ -58,115 +41,37 @@ function crearConexionPostgreSQL() {
     }
 }
 
-// Crear tablas en PostgreSQL
-function crearTablasPostgreSQL($conn) {
-    $tables = [
-        'usuarios' => "DROP TABLE IF EXISTS usuarios CASCADE; CREATE TABLE usuarios (
-            id SERIAL PRIMARY KEY,
-            usuario VARCHAR(50) UNIQUE NOT NULL,
-            password_hash VARCHAR(255) NOT NULL,
-            email VARCHAR(100),
-            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )",
-        
-        'categorias' => "CREATE TABLE IF NOT EXISTS categorias (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            slug VARCHAR(100) UNIQUE NOT NULL,
-            descripcion TEXT,
-            orden INTEGER DEFAULT 0
-        )",
-        
-        'noticias' => "CREATE TABLE IF NOT EXISTS noticias (
-            id SERIAL PRIMARY KEY,
-            titulo VARCHAR(200) NOT NULL,
-            contenido TEXT NOT NULL,
-            imagen VARCHAR(255),
-            categoria_id INTEGER REFERENCES categorias(id),
-            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            activo BOOLEAN DEFAULT TRUE
-        )",
-        
-        'blog_posts' => "CREATE TABLE IF NOT EXISTS blog_posts (
-            id SERIAL PRIMARY KEY,
-            titulo VARCHAR(200) NOT NULL,
-            contenido TEXT NOT NULL,
-            excerpt TEXT,
-            imagen VARCHAR(255),
-            slug VARCHAR(200) UNIQUE NOT NULL,
-            categoria VARCHAR(100),
-            tags TEXT,
-            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            vistas INTEGER DEFAULT 0,
-            activo BOOLEAN DEFAULT TRUE
-        )",
-        
-        'carrusel' => "CREATE TABLE IF NOT EXISTS carrusel (
-            id SERIAL PRIMARY KEY,
-            titulo VARCHAR(200) NOT NULL,
-            descripcion TEXT,
-            imagen VARCHAR(255) NOT NULL,
-            enlace VARCHAR(255),
-            orden INTEGER DEFAULT 0,
-            activo BOOLEAN DEFAULT TRUE
-        )",
-        
-        'banners' => "CREATE TABLE IF NOT EXISTS banners (
-            id SERIAL PRIMARY KEY,
-            titulo VARCHAR(200) NOT NULL,
-            imagen VARCHAR(255) NOT NULL,
-            enlace VARCHAR(255),
-            orden INTEGER DEFAULT 0,
-            activo BOOLEAN DEFAULT TRUE
-        )",
-        
-        'mensajes_contacto' => "CREATE TABLE IF NOT EXISTS mensajes_contacto (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            email VARCHAR(100) NOT NULL,
-            asunto VARCHAR(200),
-            mensaje TEXT NOT NULL,
-            fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            leido BOOLEAN DEFAULT FALSE
-        )",
-        
-        'info_contacto' => "CREATE TABLE IF NOT EXISTS info_contacto (
-            id SERIAL PRIMARY KEY,
-            tipo VARCHAR(50) NOT NULL,
-            valor TEXT NOT NULL,
-            orden INTEGER DEFAULT 0
-        )",
-        
-        'footer_items' => "CREATE TABLE IF NOT EXISTS footer_items (
-            id SERIAL PRIMARY KEY,
-            titulo VARCHAR(100) NOT NULL,
-            contenido TEXT,
-            tipo VARCHAR(50),
-            orden INTEGER DEFAULT 0
-        )"
-    ];
-
-    // Crear tablas
-    foreach ($tables as $table => $sql) {
+// Verificar si las tablas tienen datos
+function verificarTablasVacias($conn) {
+    $tablas = ['categorias', 'noticias', 'blog_posts', 'carrusel', 'banners'];
+    $vacias = [];
+    
+    foreach ($tablas as $tabla) {
         try {
-            $conn->exec($sql);
-            echo "✅ Tabla '$table' creada/verificada en PostgreSQL<br>";
+            $stmt = $conn->query("SELECT COUNT(*) as total FROM $tabla");
+            $result = $stmt->fetch();
+            $count = $result['total'];
+            
+            if ($count == 0) {
+                $vacias[] = $tabla;
+                echo "⚠️ Tabla '$tabla' está vacía<br>";
+            } else {
+                echo "✅ Tabla '$tabla' tiene $count registros<br>";
+            }
         } catch (PDOException $e) {
-            echo "❌ Error creando tabla '$table': " . $e->getMessage() . "<br>";
+            echo "❌ Error verificando tabla '$tabla': " . $e->getMessage() . "<br>";
         }
     }
+    
+    return $vacias;
 }
 
-// Insertar datos iniciales
-function insertarDatosIniciales($conn) {
+// Insertar datos de ejemplo
+function insertarDatosEjemplo($conn) {
     try {
-        // Usuario administrador
-        $adminPassword = password_hash('admin1', PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO usuarios (usuario, password_hash, email) VALUES (?, ?, ?) ON CONFLICT (usuario) DO NOTHING");
-        $stmt->execute(['admin1', $adminPassword, ADMIN_EMAIL]);
-        echo "✅ Usuario administrador creado (admin1/admin1)<br>";
+        echo "<h3>📝 Insertando datos de ejemplo...</h3>";
         
-        // Categorías iniciales
+        // 1. Categorías (si no existen)
         $categorias = [
             ['Actualidad', 'actualidad', 'Noticias y novedades del mundo tecnológico'],
             ['Afiliados', 'afiliados', 'Contenido de nuestros afiliados'],
@@ -178,53 +83,9 @@ function insertarDatosIniciales($conn) {
         foreach ($categorias as $cat) {
             $stmt->execute($cat);
         }
-        echo "✅ Categorías iniciales creadas<br>";
+        echo "✅ Categorías verificadas/creadas<br>";
         
-        // Carrusel inicial
-        $carrusel = [
-            ['Bienvenido a CodeaiNews', 'Tu fuente de noticias tecnológicas', 'https://via.placeholder.com/1200x400/007bff/ffffff?text=Bienvenido', '#', 1],
-            ['Linux y Software Libre', 'Descubre el mundo del código abierto', 'https://via.placeholder.com/1200x400/28a745/ffffff?text=Linux', '#', 2]
-        ];
-        
-        $stmt = $conn->prepare("INSERT INTO carrusel (titulo, descripcion, imagen, enlace, orden) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING");
-        foreach ($carrusel as $item) {
-            $stmt->execute($item);
-        }
-        echo "✅ Carrusel inicial creado<br>";
-        
-        // Banner inicial
-        $stmt = $conn->prepare("INSERT INTO banners (titulo, imagen, orden) VALUES (?, ?, ?) ON CONFLICT DO NOTHING");
-        $stmt->execute(['Banner Promocional', 'https://via.placeholder.com/728x90/ffc107/000000?text=Publicidad', 1]);
-        echo "✅ Banner inicial creado<br>";
-        
-        // Información de contacto
-        $contactInfo = [
-            ['direccion', 'Calle Tecnología 123, Madrid, España', 1],
-            ['telefono', '+34 91 123 45 67', 2],
-            ['email', 'info@codeainews.com', 3],
-            ['horario', 'Lunes a Viernes: 9:00 - 18:00', 4]
-        ];
-        
-        $stmt = $conn->prepare("INSERT INTO info_contacto (tipo, valor, orden) VALUES (?, ?, ?) ON CONFLICT DO NOTHING");
-        foreach ($contactInfo as $info) {
-            $stmt->execute($info);
-        }
-        echo "✅ Información de contacto creada<br>";
-        
-        // Footer inicial
-        $footerItems = [
-            ['Sobre Nosotros', 'Somos una plataforma dedicada a las noticias tecnológicas y el software libre.', 'sobre', 1],
-            ['Política de Privacidad', 'Nuestra política de privacidad y términos de uso.', 'legal', 2],
-            ['Contacto', 'Información de contacto y formulario.', 'contacto', 3]
-        ];
-        
-        $stmt = $conn->prepare("INSERT INTO footer_items (titulo, contenido, tipo, orden) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING");
-        foreach ($footerItems as $item) {
-            $stmt->execute($item);
-        }
-        echo "✅ Footer inicial creado<br>";
-        
-        // NOTICIAS DE EJEMPLO - CRÍTICO PARA QUE FUNCIONEN LAS SECCIONES
+        // 2. Noticias de ejemplo
         $noticias = [
             [
                 'Nuevo lanzamiento de Ubuntu 24.04 LTS',
@@ -260,9 +121,9 @@ function insertarDatosIniciales($conn) {
         foreach ($noticias as $noticia) {
             $stmt->execute($noticia);
         }
-        echo "✅ Noticias de ejemplo creadas (4 artículos)<br>";
+        echo "✅ Noticias de ejemplo insertadas (4 artículos)<br>";
         
-        // BLOG POSTS DE EJEMPLO - CRÍTICO PARA QUE FUNCIONE LA SECCIÓN BLOG
+        // 3. Blog posts de ejemplo
         $blogPosts = [
             [
                 'Cómo migrar de Windows a Linux sin perder datos',
@@ -325,94 +186,116 @@ function insertarDatosIniciales($conn) {
         foreach ($blogPosts as $post) {
             $stmt->execute($post);
         }
-        echo "✅ Blog posts de ejemplo creados (5 entradas)<br>";
+        echo "✅ Blog posts de ejemplo insertados (5 entradas)<br>";
         
-        echo "<br>🎉 ¡Instalación en Heroku completada exitosamente!<br>";
-        echo "✅ <strong>Datos de ejemplo agregados:</strong><br>";
-        echo "   • 4 noticias en diferentes categorías<br>";
-        echo "   • 5 entradas de blog con contenido completo<br>";
-        echo "   • Categorías, carrusel, banners y más configurados<br>";
-        echo "<br>🔑 Puedes acceder al panel con: <strong>admin1 / admin1</strong><br>";
-        echo "<br>⚠️ <strong>IMPORTANTE:</strong> Elimina este archivo (install-heroku.php) por seguridad<br>";
+        // 4. Carrusel (si no existe)
+        $carrusel = [
+            ['Bienvenido a CodeaiNews', 'Tu fuente de noticias tecnológicas', 'https://via.placeholder.com/1200x400/007bff/ffffff?text=Bienvenido', '#', 1],
+            ['Linux y Software Libre', 'Descubre el mundo del código abierto', 'https://via.placeholder.com/1200x400/28a745/ffffff?text=Linux', '#', 2]
+        ];
+        
+        $stmt = $conn->prepare("INSERT INTO carrusel (titulo, descripcion, imagen, enlace, orden) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING");
+        foreach ($carrusel as $item) {
+            $stmt->execute($item);
+        }
+        echo "✅ Carrusel verificado/creado<br>";
+        
+        // 5. Banner (si no existe)
+        $stmt = $conn->prepare("INSERT INTO banners (titulo, imagen, orden) VALUES (?, ?, ?) ON CONFLICT DO NOTHING");
+        $stmt->execute(['Banner Promocional', 'https://via.placeholder.com/728x90/ffc107/000000?text=Publicidad', 1]);
+        echo "✅ Banner verificado/creado<br>";
+        
+        echo "<br>🎉 ¡Datos de ejemplo insertados exitosamente!<br>";
+        echo "Ahora las secciones deberían mostrar contenido:<br>";
+        echo "• Blog: 5 entradas<br>";
+        echo "• Noticias: 4 artículos<br>";
+        echo "• Categorías: 4 categorías<br>";
         
     } catch (PDOException $e) {
         echo "❌ Error insertando datos: " . $e->getMessage() . "<br>";
     }
 }
 
-// Inicio de la instalación
+// Inicio del script
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instalación Heroku - CodeaiNews</title>
+    <title>Insertar Datos de Ejemplo - CodeaiNews</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { color: #333; text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
         .info { background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .info h3 { margin-top: 0; color: #1976d2; }
         .warning { background: #fff3e0; border: 1px solid #ff9800; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .warning h4 { margin-top: 0; color: #f57c00; }
+        .success { background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 5px; margin: 20px 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Instalación en Heroku - CodeaiNews</h1>
+        <h1>📝 Insertar Datos de Ejemplo - CodeaiNews</h1>
         
         <div class="info">
-            <h3>📋 Información del Entorno</h3>
-            <p><strong>App Name:</strong> <?php echo HEROKU_APP_NAME ?? 'No configurado'; ?></p>
-            <p><strong>Release Version:</strong> <?php echo HEROKU_RELEASE_VERSION ?? 'No configurado'; ?></p>
-            <p><strong>Database:</strong> PostgreSQL</p>
-            <p><strong>URL:</strong> <?php echo SITE_URL ?? 'No configurado'; ?></p>
+            <h3>📋 Propósito</h3>
+            <p>Este script inserta datos de ejemplo en las tablas existentes para que las secciones del sitio muestren contenido.</p>
+            <p><strong>Útil cuando:</strong> Las tablas están creadas pero vacías, y las secciones no muestran contenido.</p>
         </div>
 
         <div class="warning">
             <h4>⚠️ Importante</h4>
-            <p>Este script solo debe ejecutarse UNA VEZ después del despliegue en Heroku.</p>
-            <p>Después de la instalación, elimina este archivo por seguridad.</p>
+            <p>Este script es seguro de ejecutar múltiples veces (usa ON CONFLICT DO NOTHING).</p>
+            <p>Después de usarlo, puedes eliminarlo por seguridad.</p>
         </div>
 
-        <h2>🔧 Proceso de Instalación</h2>
+        <h2>🔍 Verificando estado de las tablas...</h2>
         
         <?php
-        // Verificar configuración
-        list($configOk, $errores) = verificarConfiguracionHeroku();
-        if (!$configOk) {
-            echo "<div style='background: #ffebee; padding: 15px; border-radius: 5px; margin: 20px 0;'>";
-            echo "<h3>❌ Errores de Configuración:</h3>";
-            echo "<ul>";
-            foreach ($errores as $error) {
-                echo "<li>$error</li>";
-            }
-            echo "</ul>";
-            echo "</div>";
-        } else {
+        try {
             // Crear conexión
             $conn = crearConexionPostgreSQL();
             
-            // Crear tablas
-            crearTablasPostgreSQL($conn);
+            // Verificar tablas vacías
+            $tablasVacias = verificarTablasVacias($conn);
             
-            // Insertar datos
-            insertarDatosIniciales($conn);
+            if (!empty($tablasVacias)) {
+                echo "<div class='warning'>";
+                echo "<h3>⚠️ Se encontraron tablas vacías:</h3>";
+                echo "<ul>";
+                foreach ($tablasVacias as $tabla) {
+                    echo "<li>$tabla</li>";
+                }
+                echo "</ul>";
+                echo "<p>Procediendo a insertar datos de ejemplo...</p>";
+                echo "</div>";
+                
+                // Insertar datos
+                insertarDatosEjemplo($conn);
+                
+            } else {
+                echo "<div class='success'>";
+                echo "<h3>✅ Todas las tablas tienen contenido</h3>";
+                echo "<p>No es necesario insertar datos adicionales.</p>";
+                echo "</div>";
+            }
             
             // Cerrar conexión
             $conn = null;
+            
+        } catch (Exception $e) {
+            echo "<div style='background: #ffebee; padding: 15px; border-radius: 5px; margin: 20px 0;'>";
+            echo "<h3>❌ Error:</h3>";
+            echo "<p>" . $e->getMessage() . "</p>";
+            echo "</div>";
         }
         ?>
 
         <div style="text-align: center; margin-top: 30px;">
             <a href="index.php" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 0 10px;">🏠 Ir al Inicio</a>
-            <a href="dashboard.php" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 0 10px;">⚙️ Panel de Control</a>
+            <a href="blog.php" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 0 10px;">📝 Ver Blog</a>
+            <a href="dashboard.php" style="background: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 0 10px;">⚙️ Panel de Control</a>
         </div>
     </div>
 </body>
 </html>
-
-
-
-
