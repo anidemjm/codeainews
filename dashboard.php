@@ -792,18 +792,16 @@ try {
         // Funciones CRUD para Noticias
         async function editarNoticia(id) {
             try {
-                const response = await fetch(`api/noticias.php?id=${id}`);
-                const noticia = await response.json();
+                const response = await fetch(`api/noticias-crud.php?id=${id}`);
+                const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
+                    const noticia = result.data;
                     // Llenar el formulario con los datos de la noticia
                     document.getElementById('noticia-titulo').value = noticia.titulo;
-                    document.getElementById('noticia-resumen').value = noticia.resumen;
                     document.getElementById('noticia-contenido').value = noticia.contenido;
                     document.getElementById('noticia-imagen').value = noticia.imagen;
-                    document.getElementById('noticia-categoria').value = noticia.categoria;
-                    document.getElementById('noticia-autor').value = noticia.autor;
-                    document.getElementById('noticia-enlace').value = noticia.enlace;
+                    document.getElementById('noticia-categoria').value = noticia.categoria_id;
                     
                     // Cambiar el botón a modo edición
                     const btnCrear = document.querySelector('#formulario-noticia button[type="submit"]');
@@ -812,7 +810,7 @@ try {
                     
                     mostrarFormulario('noticia-form-container');
                 } else {
-                    alert('Error al cargar la noticia: ' + noticia.error);
+                    alert('Error al cargar la noticia: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al cargar la noticia: ' + error.message);
@@ -822,19 +820,16 @@ try {
         async function actualizarNoticia(id) {
             const formData = new FormData(document.getElementById('formulario-noticia'));
             const noticia = {
+                id: id,
                 titulo: formData.get('titulo'),
-                resumen: formData.get('resumen'),
                 contenido: formData.get('contenido'),
                 imagen: formData.get('imagen'),
-                categoria: formData.get('categoria'),
-                autor: formData.get('autor'),
-                enlace: formData.get('enlace') || '#',
-                estado: 'borrador',
-                color_categoria: '#2196f3'
+                categoria_id: formData.get('categoria'),
+                activo: true
             };
             
             try {
-                const response = await fetch(`api/noticias.php?id=${id}`, {
+                const response = await fetch(`api/noticias-crud.php`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -844,11 +839,11 @@ try {
                 
                 const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
                     alert('Noticia actualizada exitosamente');
                     location.reload(); // Recargar para mostrar cambios
                 } else {
-                    alert('Error: ' + result.error);
+                    alert('Error: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al actualizar la noticia: ' + error.message);
@@ -858,17 +853,17 @@ try {
         async function eliminarNoticia(id) {
             if (confirm('¿Estás seguro de que quieres eliminar esta noticia?')) {
                 try {
-                    const response = await fetch(`api/noticias.php?id=${id}`, {
+                    const response = await fetch(`api/noticias-crud.php?id=${id}`, {
                         method: 'DELETE'
                     });
                     
                     const result = await response.json();
                     
-                    if (response.ok) {
+                    if (result.success) {
                         alert('Noticia eliminada exitosamente');
                         location.reload(); // Recargar para mostrar cambios
                     } else {
-                        alert('Error: ' + result.error);
+                        alert('Error: ' + result.message);
                     }
                 } catch (error) {
                     alert('Error al eliminar la noticia: ' + error.message);
@@ -879,16 +874,17 @@ try {
         // Funciones CRUD para Banners
         async function editarBanner(id) {
             try {
-                const response = await fetch(`api/banners.php?id=${id}`);
-                const banner = await response.json();
+                const response = await fetch(`api/banners-crud.php?id=${id}`);
+                const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
+                    const banner = result.data;
                     // Llenar el formulario con los datos del banner
                     document.getElementById('banner-titulo').value = banner.titulo;
                     document.getElementById('banner-descripcion').value = banner.descripcion;
                     document.getElementById('banner-imagen').value = banner.imagen;
-                    document.getElementById('banner-enlace').value = banner.enlace;
-                    document.getElementById('banner-orden').value = banner.orden;
+                    document.getElementById('banner-enlace').value = banner.enlace || '#';
+                    document.getElementById('banner-orden').value = banner.orden || 1;
                     
                     // Cambiar el botón a modo edición
                     const btnCrear = document.querySelector('#formulario-banner button[type="submit"]');
@@ -897,7 +893,7 @@ try {
                     
                     mostrarFormulario('banner-form-container');
                 } else {
-                    alert('Error al cargar el banner: ' + banner.error);
+                    alert('Error al cargar el banner: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al cargar el banner: ' + error.message);
@@ -907,16 +903,17 @@ try {
         async function actualizarBanner(id) {
             const formData = new FormData(document.getElementById('formulario-banner'));
             const banner = {
+                id: id,
                 titulo: formData.get('titulo'),
                 descripcion: formData.get('descripcion'),
                 imagen: formData.get('imagen'),
                 enlace: formData.get('enlace') || '#',
                 orden: formData.get('orden') || 1,
-                estado: 'activo'
+                activo: true
             };
             
             try {
-                const response = await fetch(`api/banners.php?id=${id}`, {
+                const response = await fetch(`api/banners-crud.php`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -926,11 +923,11 @@ try {
                 
                 const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
                     alert('Banner actualizado exitosamente');
                     location.reload();
                 } else {
-                    alert('Error: ' + result.error);
+                    alert('Error: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al actualizar el banner: ' + error.message);
@@ -940,17 +937,17 @@ try {
         async function eliminarBanner(id) {
             if (confirm('¿Estás seguro de que quieres eliminar este banner?')) {
                 try {
-                    const response = await fetch(`api/banners.php?id=${id}`, {
+                    const response = await fetch(`api/banners-crud.php?id=${id}`, {
                         method: 'DELETE'
                     });
                     
                     const result = await response.json();
                     
-                    if (response.ok) {
+                    if (result.success) {
                         alert('Banner eliminado exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + result.error);
+                        alert('Error: ' + result.message);
                     }
                 } catch (error) {
                     alert('Error al eliminar el banner: ' + error.message);
@@ -961,15 +958,16 @@ try {
         // Funciones CRUD para Categorías
         async function editarCategoria(id) {
             try {
-                const response = await fetch(`api/categorias.php?id=${id}`);
-                const categoria = await response.json();
+                const response = await fetch(`api/categorias-crud.php?id=${id}`);
+                const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
+                    const categoria = result.data;
                     // Llenar el formulario con los datos de la categoría
                     document.getElementById('categoria-nombre').value = categoria.nombre;
-                    document.getElementById('categoria-color').value = categoria.color;
-                    document.getElementById('categoria-descripcion').value = categoria.descripcion;
-                    document.getElementById('categoria-orden').value = categoria.orden;
+                    document.getElementById('categoria-color').value = categoria.color || '#667eea';
+                    document.getElementById('categoria-descripcion').value = categoria.descripcion || '';
+                    document.getElementById('categoria-orden').value = categoria.orden || 1;
                     
                     // Cambiar el botón a modo edición
                     const btnCrear = document.querySelector('#formulario-categoria button[type="submit"]');
@@ -978,7 +976,7 @@ try {
                     
                     mostrarFormulario('categoria-form-container');
                 } else {
-                    alert('Error al cargar la categoría: ' + categoria.error);
+                    alert('Error al cargar la categoría: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al cargar la categoría: ' + error.message);
@@ -988,6 +986,7 @@ try {
         async function actualizarCategoria(id) {
             const formData = new FormData(document.getElementById('formulario-categoria'));
             const categoria = {
+                id: id,
                 nombre: formData.get('nombre'),
                 color: formData.get('color'),
                 descripcion: formData.get('descripcion'),
@@ -995,7 +994,7 @@ try {
             };
             
             try {
-                const response = await fetch(`api/categorias.php?id=${id}`, {
+                const response = await fetch(`api/categorias-crud.php`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1005,11 +1004,11 @@ try {
                 
                 const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
                     alert('Categoría actualizada exitosamente');
                     location.reload();
                 } else {
-                    alert('Error: ' + result.error);
+                    alert('Error: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al actualizar la categoría: ' + error.message);
@@ -1019,17 +1018,17 @@ try {
         async function eliminarCategoria(id) {
             if (confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
                 try {
-                    const response = await fetch(`api/categorias.php?id=${id}`, {
+                    const response = await fetch(`api/categorias-crud.php?id=${id}`, {
                         method: 'DELETE'
                     });
                     
                     const result = await response.json();
                     
-                    if (response.ok) {
+                    if (result.success) {
                         alert('Categoría eliminada exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + result.error);
+                        alert('Error: ' + result.message);
                     }
                 } catch (error) {
                     alert('Error al eliminar la categoría: ' + error.message);
@@ -1040,20 +1039,18 @@ try {
         // Funciones CRUD para Blog Posts
         async function editarBlogPost(id) {
             try {
-                const response = await fetch(`api/blog.php?id=${id}`);
-                const post = await response.json();
+                const response = await fetch(`api/blog-crud.php?id=${id}`);
+                const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
+                    const post = result.data;
                     // Llenar el formulario con los datos del post
                     document.getElementById('blog-titulo').value = post.titulo;
-                    document.getElementById('blog-excerpt').value = post.excerpt;
+                    document.getElementById('blog-excerpt').value = post.excerpt || '';
                     document.getElementById('blog-contenido').value = post.contenido;
                     document.getElementById('blog-imagen').value = post.imagen;
                     document.getElementById('blog-categoria').value = post.categoria;
-                    document.getElementById('blog-autor').value = post.autor;
-                    document.getElementById('blog-etiquetas').value = post.etiquetas;
-                    document.getElementById('blog-estado').value = post.estado;
-                    document.getElementById('blog-popularidad').value = post.popularidad;
+                    document.getElementById('blog-tags').value = post.tags || '';
                     
                     // Cambiar el botón a modo edición
                     const btnCrear = document.querySelector('#formulario-blog button[type="submit"]');
@@ -1062,7 +1059,7 @@ try {
                     
                     mostrarFormulario('blog-form-container');
                 } else {
-                    alert('Error al cargar el post: ' + post.error);
+                    alert('Error al cargar el post: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al cargar el post: ' + error.message);
@@ -1072,19 +1069,18 @@ try {
         async function actualizarBlogPost(id) {
             const formData = new FormData(document.getElementById('formulario-blog'));
             const post = {
+                id: id,
                 titulo: formData.get('titulo'),
                 excerpt: formData.get('excerpt'),
                 contenido: formData.get('contenido'),
                 imagen: formData.get('imagen'),
                 categoria: formData.get('categoria'),
-                autor: formData.get('autor'),
-                etiquetas: formData.get('etiquetas'),
-                estado: formData.get('estado'),
-                popularidad: formData.get('popularidad') || 5.0
+                tags: formData.get('tags'),
+                activo: true
             };
             
             try {
-                const response = await fetch(`api/blog.php?id=${id}`, {
+                const response = await fetch(`api/blog-crud.php`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1094,11 +1090,11 @@ try {
                 
                 const result = await response.json();
                 
-                if (response.ok) {
+                if (result.success) {
                     alert('Post actualizado exitosamente');
                     location.reload();
                 } else {
-                    alert('Error: ' + result.error);
+                    alert('Error: ' + result.message);
                 }
             } catch (error) {
                 alert('Error al actualizar el post: ' + error.message);
@@ -1108,17 +1104,17 @@ try {
         async function eliminarBlogPost(id) {
             if (confirm('¿Estás seguro de que quieres eliminar esta entrada del blog?')) {
                 try {
-                    const response = await fetch(`api/blog.php?id=${id}`, {
+                    const response = await fetch(`api/blog-crud.php?id=${id}`, {
                         method: 'DELETE'
                     });
                     
                     const result = await response.json();
                     
-                    if (response.ok) {
+                    if (result.success) {
                         alert('Post eliminado exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + result.error);
+                        alert('Error: ' + result.message);
                     }
                 } catch (error) {
                     alert('Error al eliminar el post: ' + error.message);
